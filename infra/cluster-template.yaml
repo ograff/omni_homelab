@@ -1,0 +1,51 @@
+kind: Cluster
+name: homelab
+kubernetes:
+  version: v1.33.1
+talos:
+  version: v1.10.3
+features:
+  enableWorkloadProxy: true
+  useEmbeddedDiscoveryService: true
+patches:
+  - idOverride: 500-cba0bec7-2ab3-4e5b-955c-e78ad66d5def
+    annotations:
+      description: Kubespan
+      name: Kubespan
+    inline:
+      machine:
+        network:
+          kubespan:
+            enabled: true
+  - name: cni
+    file: patches/cni.yaml
+---
+kind: ControlPlane
+machines:
+  - ec26c3ea-e8e6-8858-3129-be9358d885b9
+  - ec281cab-c359-3f42-3ba1-8863768d09a8
+  - ec28caa7-c92d-9048-aff9-1bc662ea8919
+patches:
+  - idOverride: 500-4c111b32-daaa-4b65-bce9-d754eed6c039
+    annotations:
+      name: Allow scheduling on control plane
+    inline:
+      cluster:
+        allowSchedulingOnControlPlanes: true
+  - name: cilium
+    file: patches/cilium.yaml
+  - name: argocd
+    file: patches/argocd.yaml
+  - name: monitoring
+    file: patches/monitoring.yaml
+---
+kind: Workers
+---
+kind: Machine
+name: ec26c3ea-e8e6-8858-3129-be9358d885b9
+---
+kind: Machine
+name: ec281cab-c359-3f42-3ba1-8863768d09a8
+---
+kind: Machine
+name: ec28caa7-c92d-9048-aff9-1bc662ea8919
