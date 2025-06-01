@@ -68,3 +68,9 @@ spec:
             - /data/ca.crt
             - /data/tls.crt
             - /data/tls.key
+        - name: argocd
+          kind: NetworkPolicy
+          namespace: argocd
+          jsonPointers:
+            - /spec
+
