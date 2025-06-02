@@ -13,6 +13,7 @@ spec:
     spec:
       containers:
       - name: iperf3
-        image: leodotcloud/swiss-army-knife
+        image: networkstatic/iperf3
+        command: -s
         ports:
         - containerPort: 5201
