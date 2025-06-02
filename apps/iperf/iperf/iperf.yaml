@@ -14,6 +14,6 @@ spec:
       containers:
       - name: iperf3
         image: networkstatic/iperf3
-        command: ["-s"]
+        command: ["iperf3", "-s"]
         ports:
         - containerPort: 5201
