@@ -2,10 +2,10 @@ grafana:
   sidecar:
     dashboards:
       enabled: true
-      searchNamespace: monitoring
+      searchNamespace: ALL
     datasources:
       enabled: true
-      searchNamespace: monitoring
+      searchNamespace: ALL
   grafana.ini:
     auth:
       disable_login_form: true
@@ -19,3 +19,50 @@ grafana:
     annotations:
       omni-kube-service-exposer.sidero.dev/port: "50082"
       omni-kube-service-exposer.sidero.dev/label: Grafana
+  dashboardProviders:
+    dashboardproviders.yaml:
+      apiVersion: 1
+      providers:
+      - name: 'grafana-dashboards-kubernetes'
+        orgId: 1
+        folder: 'Kubernetes'
+        type: file
+        disableDeletion: true
+        editable: true
+        options:
+          path: /var/lib/grafana/dashboards/grafana-dashboards-kubernetes
+      - name: 'grafana-dashboards-ingress-nginx'
+        orgId: 1
+        folder: 'Ingress-nginx'
+        type: file
+        disableDeletion: true
+        editable: true
+        options:
+          path: /var/lib/grafana/dashboards/ingress-nginx
+  dashboards:
+    grafana-dashboards-kubernetes:
+      k8s-system-api-server:
+        url: https://raw.githubusercontent.com/dotdc/grafana-dashboards-kubernetes/master/dashboards/k8s-system-api-server.json
+        token: ''
+      k8s-system-coredns:
+        url: https://raw.githubusercontent.com/dotdc/grafana-dashboards-kubernetes/master/dashboards/k8s-system-coredns.json
+        token: ''
+      k8s-views-global:
+        url: https://raw.githubusercontent.com/dotdc/grafana-dashboards-kubernetes/master/dashboards/k8s-views-global.json
+        token: ''
+      k8s-views-namespaces:
+        url: https://raw.githubusercontent.com/dotdc/grafana-dashboards-kubernetes/master/dashboards/k8s-views-namespaces.json
+        token: ''
+      k8s-views-nodes:
+        url: https://raw.githubusercontent.com/dotdc/grafana-dashboards-kubernetes/master/dashboards/k8s-views-nodes.json
+        token: ''
+      k8s-views-pods:
+        url: https://raw.githubusercontent.com/dotdc/grafana-dashboards-kubernetes/master/dashboards/k8s-views-pods.json
+        token: ''
+    grafana-dashboards-ingress-nginx:
+      official:
+        url: https://raw.githubusercontent.com/kubernetes/ingress-nginx/refs/heads/main/deploy/grafana/dashboards/nginx.json
+        token: ''
+      nirvana:
+        url: https://raw.githubusercontent.com/DevOps-Nirvana/Grafana-Dashboards/refs/heads/main/kubernetes-nginx-ingress-via-prometheus.json
+        token: ''
