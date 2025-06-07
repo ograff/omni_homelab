@@ -25,6 +25,10 @@ kube-prometheus-stack:
                 storage: 10Gi
   prometheus:
     prometheusSpec:
+      ruleSelectorNilUsesHelmValues: false
+      serviceMonitorSelectorNilUsesHelmValues: false
+      podMonitorSelectorNilUsesHelmValues: false
+      probeSelectorNilUsesHelmValues: false
       storageSpec:
         volumeClaimTemplate:
           spec:
