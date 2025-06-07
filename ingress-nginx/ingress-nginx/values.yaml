@@ -2,11 +2,6 @@ ingress-nginx:
   controller:
     admissionWebhooks:
       timeoutSeconds: 30
-      patch:
-        enabled: true
-        jobAnnotations:
-          "argocd.argoproj.io/hook": "PreSync"
-          "argocd.argoproj.io/hook-delete-policy": "HookSucceeded"
     metrics:
       enabled: true
       serviceMonitor:
