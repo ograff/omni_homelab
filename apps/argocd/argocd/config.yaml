@@ -4,3 +4,19 @@ metadata:
   name: argocd-cm
 data:
   application.resourceTrackingMethod: annotation
+  resource.customizations.health.batch_Job: |
+    hs = {}
+    if obj.status ~= nil then
+      if obj.status.succeeded ~= nil and obj.status.succeeded > 0 then
+        hs.status = "Healthy"
+        hs.message = "Job completed successfully"
+        return hs
+      elseif obj.status.failed ~= nil and obj.status.failed > 0 then
+        hs.status = "Degraded"
+        hs.message = "Job failed"
+        return hs
+      end
+    end
+    hs.status = "Progressing"
+    hs.message = "Job is still running"
+    return hs
