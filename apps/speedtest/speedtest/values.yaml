@@ -16,6 +16,7 @@ openspeedtest:
   
   ingress:
     enabled: true
+    className: nginx
     hosts:
       - host: speedtest.2411.house
         paths:
