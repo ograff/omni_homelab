@@ -6,6 +6,11 @@ grafana:
     datasources:
       enabled: true
       searchNamespace: ALL
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    hosts:
+      - grafana.2411.house
   grafana.ini:
     auth:
       disable_login_form: true
