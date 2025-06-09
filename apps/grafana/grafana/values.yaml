@@ -44,6 +44,14 @@ grafana:
         editable: true
         options:
           path: /var/lib/grafana/dashboards/ingress-nginx
+      - name: 'random'
+        orgId: 1
+        folder: 'Random'
+        type: file
+        disableDeletion: true
+        editable: true
+        options:
+          path: /var/lib/grafana/dashboards/random
   dashboards:
     grafana-dashboards-kubernetes:
       k8s-system-api-server:
@@ -71,3 +79,6 @@ grafana:
       nirvana:
         url: https://raw.githubusercontent.com/DevOps-Nirvana/Grafana-Dashboards/refs/heads/main/kubernetes-nginx-ingress-via-prometheus.json
         token: ''
+    random:
+      paperless:
+        url: https://raw.githubusercontent.com/ograff/omni_homelab/refs/heads/main/paperless.json

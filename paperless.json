@@ -1,0 +1,93 @@
+{
+  "title": "Paperless-NGX Metrics",
+  "tags": ["paperless", "prometheus"],
+  "timezone": "browser",
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Total Documents",
+      "gridPos": { "x": 0, "y": 0, "w": 6, "h": 3 },
+      "targets": [
+        {
+          "expr": "paperless_documents_total",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Total Correspondents",
+      "gridPos": { "x": 6, "y": 0, "w": 6, "h": 3 },
+      "targets": [
+        {
+          "expr": "paperless_correspondents_total",
+          "refId": "B"
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Total Tags",
+      "gridPos": { "x": 0, "y": 3, "w": 6, "h": 3 },
+      "targets": [
+        {
+          "expr": "paperless_tags_total",
+          "refId": "C"
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Total Storage Used (MB)",
+      "gridPos": { "x": 6, "y": 3, "w": 6, "h": 3 },
+      "targets": [
+        {
+          "expr": "paperless_storage_current_bytes / 1e6",
+          "refId": "D"
+        }
+      ],
+      "unit": "megabytes"
+    },
+    {
+      "type": "graph",
+      "title": "Storage Usage Over Time",
+      "gridPos": { "x": 0, "y": 6, "w": 12, "h": 6 },
+      "targets": [
+        {
+          "expr": "paperless_storage_current_bytes / 1e6",
+          "refId": "E"
+        }
+      ],
+      "yaxes": [
+        { "format": "megabytes", "label": "Storage (MB)", "logBase": 1 },
+        { "format": "short" }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Queued Tasks",
+      "gridPos": { "x": 0, "y": 12, "w": 6, "h": 3 },
+      "targets": [
+        {
+          "expr": "paperless_task_queue_queued_total",
+          "refId": "F"
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Running Tasks",
+      "gridPos": { "x": 6, "y": 12, "w": 6, "h": 3 },
+      "targets": [
+        {
+          "expr": "paperless_task_queue_running_total",
+          "refId": "G"
+        }
+      ]
+    }
+  ],
+  "schemaVersion": 37,
+  "version": 1,
+  "refresh": "30s"
+}
+
