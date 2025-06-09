@@ -136,4 +136,24 @@ paperless-ngx:
         enabled: false
     replica:
       replicaCount: 0
-
+  sidecars:
+    exporter:
+      image: ghcr.io/hansmi/prometheus-paperless-exporter:latest
+      args:
+        - --paperless-url=http://localhost:8000
+      ports:
+        - name: metrics
+          containerPort: 9752
+      readinessProbe:
+        httpGet:
+          path: /metrics
+          port: metrics
+        initialDelaySeconds: 5
+        periodSeconds: 10
+      livenessProbe:
+        httpGet:
+          path: /metrics
+          port: metrics
+        initialDelaySeconds: 15
+        periodSeconds: 20
+  
