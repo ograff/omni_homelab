@@ -136,26 +136,31 @@ paperless-ngx:
         enabled: false
     replica:
       replicaCount: 0
- # sidecars:
- #   exporter:
- #     image: ghcr.io/hansmi/prometheus-paperless-exporter:latest
- #     env:
- #       PAPERLESS_URL: http://paperless-paperless-paperless-ngx:8000
- #       PAPERLESS_AUTH_TOKEN_FILE: /auth-token.txt
- #       PAPERLESS_SERVER_TIMEZONE: America/Los_Angeles
- #     ports:
- #       - name: metrics
- #         containerPort: 9752
- #     readinessProbe:
- #       httpGet:
- #         path: /metrics
- #         port: metrics
- #       initialDelaySeconds: 5
- #       periodSeconds: 10
- #     livenessProbe:
- #       httpGet:
- #         path: /metrics
- #         port: metrics
- #       initialDelaySeconds: 15
- #       periodSeconds: 20
- # 
+  sidecars:
+    exporter:
+      image: ghcr.io/hansmi/prometheus-paperless-exporter:latest
+      env:
+        PAPERLESS_URL: http://paperless-paperless-paperless-ngx:8000
+        PAPERLESS_SERVER_TIMEZONE: America/Los_Angeles
+        PAPERLESS_AUTH_TOKEN:
+          valueFrom:
+            secretKeyRef:
+              name: metrics-secret
+              key: PAPERLESS_AUTH_TOKEN
+
+      ports:
+        - name: metrics
+          containerPort: 8081
+      readinessProbe:
+        httpGet:
+          path: /metrics
+          port: metrics
+        initialDelaySeconds: 5
+        periodSeconds: 10
+      livenessProbe:
+        httpGet:
+          path: /metrics
+          port: metrics
+        initialDelaySeconds: 15
+        periodSeconds: 20
+  
