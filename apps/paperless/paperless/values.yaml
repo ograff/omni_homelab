@@ -139,8 +139,10 @@ paperless-ngx:
   sidecars:
     exporter:
       image: ghcr.io/hansmi/prometheus-paperless-exporter:latest
-      args:
-        - --paperless-url=http://localhost:8000
+      env:
+        PAPERLESS_URL: http://paperless-paperless-paperless-ngx:8000
+        PAPERLESS_AUTH_TOKEN_FILE: /auth-token.txt
+        PAPERLESS_SERVER_TIMEZONE: America/Los_Angeles
       ports:
         - name: metrics
           containerPort: 9752
