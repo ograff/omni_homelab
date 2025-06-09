@@ -157,10 +157,12 @@ paperless-ngx:
           port: metrics
         initialDelaySeconds: 5
         periodSeconds: 10
+        timeoutSeconds: 30
       livenessProbe:
         httpGet:
           path: /metrics
           port: metrics
+        timeoutSeconds: 30
         initialDelaySeconds: 15
         periodSeconds: 20
   
