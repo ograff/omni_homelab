@@ -1,4 +1,4 @@
-paperless-ngx:
+API_KEYpaperless-ngx:
   image:
     # -- Image repository
     repository: ghcr.io/paperless-ngx/paperless-ngx
@@ -140,7 +140,7 @@ paperless-ngx:
     exporter:
       image: ghcr.io/hansmi/prometheus-paperless-exporter:latest
       env:
-        PAPERLESS_URL: http://paperless-paperless-paperless-ngx:8000
+        PAPERLESS_URL: http://localhost:8000
         PAPERLESS_SERVER_TIMEZONE: America/Los_Angeles
         PAPERLESS_AUTH_TOKEN:
           valueFrom:
