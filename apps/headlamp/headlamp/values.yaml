@@ -1,0 +1,96 @@
+headlamp:
+  # Default values for headlamp.
+  # This is a YAML-formatted file.
+  # Declare variables to be passed into your templates.
+  
+  # -- Number of desired pods
+  replicaCount: 1
+  
+  ingress:
+    # -- Enable ingress controller resource
+    enabled: true
+    # -- Annotations for Ingress resource
+    annotations:
+      {}
+      # kubernetes.io/tls-acme: "true"
+  
+    # -- Additional labels to add to the Ingress resource
+    labels: {}
+      # app.kubernetes.io/part-of: traefik
+      # environment: prod
+  
+    # -- Ingress class name. replacement for the deprecated "kubernetes.io/ingress.class" annotation
+    ingressClassName: "nginx"
+  
+    # -- Hostname(s) for the Ingress resource
+    # Please refer to https://kubernetes.io/docs/reference/kubernetes-api/service-resources/ingress-v1/#IngressSpec for more information.
+    hosts:
+       - host: headlamp.2411.house
+         paths:
+         - path: /
+           type: ImplementationSpecific
+    # -- Ingress TLS configuration
+    tls: []
+    #  - secretName: chart-example-tls
+    #    hosts:
+    #      - chart-example.local
+  
+  # -- CPU/Memory resource requests/limits
+  resources:
+    {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+  
+  # -- Node labels for pod assignment
+  nodeSelector: {}
+  
+  # -- Toleration labels for pod assignment
+  tolerations: []
+  
+  # -- Affinity settings for pod assignment
+  affinity: {}
+  
+  # Plugin Manager Sidecar Container Configuration
+  pluginsManager:
+    # -- Enable plugin manager
+    enabled: false
+    # -- Plugin configuration file name
+    configFile: "plugin.yml"
+    # -- Plugin configuration content in YAML format. This is required if plugins.enabled is true.
+    configContent: ""
+    # -- Base node image to use
+    baseImage: node:lts-alpine
+    # -- Headlamp plugin package version to install
+    version: latest
+    # -- Specify resrouces
+    # resources:
+    #   requests:
+    #     cpu: "500m"
+    #     memory: "2048Mi"
+    #   limits:
+    #     cpu: "1000m"
+    #     memory: "4096Mi"
+  
+  # -- Additional Kubernetes manifests to be deployed. Include the manifest as nested YAML.
+  extraManifests: []
+  # - apiVersion: v1
+  #   kind: ConfigMap
+  #   metadata:
+  #     name: my-config
+  #   data:
+  #     key: value
+  # - apiVersion: v1
+  #   kind: ConfigMap
+  #   metadata:
+  #     name: my-config-too
+  #   data:
+  #     key: value
+  
