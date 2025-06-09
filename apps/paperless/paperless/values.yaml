@@ -21,6 +21,12 @@ paperless-ngx:
     # -- Configures service settings for the chart.
     # @default -- See [values.yaml](./values.yaml)
     main:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8081"
+        prometheus.io/path: "/metrics"
+        prometheus.io/collectionInterval: "60s"
+        prometheus.io/collectionTimeout: "30s"
       ports:
         http:
           port: 8000
