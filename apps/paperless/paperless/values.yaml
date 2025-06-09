@@ -81,7 +81,7 @@ paperless-ngx:
       retain: true
       mountPath: /usr/src/paperless/consume
       # storageClass: ""
-      accessMode: ReadWriteMany
+      accessMode: ReadWriteOnce
       size: 4Gi
 
   # -- Enable and configure postgresql database subchart under this key.
