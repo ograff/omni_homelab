@@ -42,8 +42,7 @@ kube-prometheus-stack:
         - prom.2411.house
     prometheusSpec:
       ruleSelectorNilUsesHelmValues: false
-      serviceMonitorNamespaceSelector: {}
-      serviceMonitorSelector: {}
+      serviceMonitorSelectorNilUsesHelmValues: false
       podMonitorSelectorNilUsesHelmValues: false
       probeSelectorNilUsesHelmValues: false
       storageSpec:
