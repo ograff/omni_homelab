@@ -1,4 +1,4 @@
-API_KEYpaperless-ngx:
+paperless-ngx:
   image:
     # -- Image repository
     repository: ghcr.io/paperless-ngx/paperless-ngx
