@@ -1,0 +1,3 @@
+- op: replace #action
+  path: /spec #resouirce we want to change
+  value: {} #value we want to use for patching

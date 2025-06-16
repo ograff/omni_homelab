@@ -12,3 +12,9 @@ patches:
   - path: config.yaml
   - path: params.yaml
   - path: service.yaml
+  - target:
+      group: networking.k8s.io
+      version: v1
+      kind: NetworkPolicy
+      name: ".*"
+    path: empty.yaml
