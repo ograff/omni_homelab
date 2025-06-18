@@ -40,6 +40,14 @@ kube-prometheus-stack:
         external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
       hosts:
         - prom.2411.house
+    monitor:
+      attachMetadata:
+        node: true
+      relabelings:
+        - action: replace
+          sourceLabels:
+            - __meta_kubernetes_node_name
+          targetLabel: node
     prometheusSpec:
       ruleSelectorNilUsesHelmValues: false
       serviceMonitorSelectorNilUsesHelmValues: false
