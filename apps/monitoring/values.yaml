@@ -2,9 +2,9 @@ kube-prometheus-stack:
   # NOTE: These must be set manually to the control plane IP addresses
   kubeEtcd:
     endpoints:
-      - 95.217.162.47
-      - 65.109.238.208
-      - 135.181.44.201
+      - talos-1
+      - talos-2
+      - talos-3
   kubeControllerManager:
     service:
       selector:
