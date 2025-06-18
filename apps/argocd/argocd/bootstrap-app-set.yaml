@@ -35,7 +35,7 @@ spec:
         automated:
           prune: false
         syncOptions:
-          - CreateNamespace=false
+          - CreateNamespace=true
           - ServerSideApply=true
           - ApplyOutOfSyncOnly=true
           - RespectIgnoreDifferences=true
