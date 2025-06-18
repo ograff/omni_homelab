@@ -10,7 +10,7 @@ spec:
               elements:
                 - repoURL: https://github.com/ograff/omni_homelab.git
                   revision: HEAD
-                  repoPath: apps/*/*
+                  repoPath: apps/*
           - git:
               repoURL: '{{ repoURL }}'
               revision: '{{ revision }}'
@@ -20,7 +20,7 @@ spec:
     preserveResourcesOnDeletion: true
   template:
     metadata:
-      name: '{{ path[1] }}-{{ path.basenameNormalized }}'
+      name: '{{ path.basenameNormalized }}'
       namespace: argocd
     spec:
       project: default
@@ -30,7 +30,7 @@ spec:
         path: '{{ path }}'
       destination:
         server: https://kubernetes.default.svc
-        namespace: '{{ path[1] }}'
+        namespace: '{{ path.basenameNormalized }}'
       syncPolicy:
         automated:
           prune: false
