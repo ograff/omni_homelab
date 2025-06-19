@@ -39,7 +39,7 @@ spec:
         image: alpine:3.22.0
         # Keep the container running
         command: ["/bin/sh"]
-        args: ["-c", "while true; do echo 'Alpine container running on node:' $(hostname); sleep 300; done"]
+        args: ["-c", "while true; do echo 'Alpine container running on node:' ${NODE_NAME}; sleep 300; done"]
         
         # Resource limits (optional but recommended)
         resources:
