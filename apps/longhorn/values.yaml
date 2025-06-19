@@ -24,3 +24,8 @@ longhorn:
         omni-kube-service-exposer.sidero.dev/label: Longhorn
   preUpgradeChecker:
     jobEnabled: false
+  ingress:
+    enabled: true
+    ingressClassName: "nginx"
+    host: longhorn.2411.house
+
