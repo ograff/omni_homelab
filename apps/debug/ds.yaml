@@ -70,6 +70,18 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
+
+        # Mount the Tailscale socket
+        volumeMounts:
+        - name: tailscale-socket
+          mountPath: /var/run/tailscale/tailscaled.sock
+
+      # Define the volume for the Tailscale socket
+      volumes:
+      - name: tailscale-socket
+        hostPath:
+          path: /var/run/tailscale/tailscaled.sock
+          type: Socket
       
       # Restart policy for DaemonSet pods
       restartPolicy: Always
