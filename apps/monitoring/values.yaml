@@ -2,6 +2,10 @@ kube-prometheus-stack:
   # NOTE: These must be set manually to the control plane IP addresses
   kubeEtcd:
     endpoints: []
+    service:
+      enabled: true
+      ipFamilyPolicy: "SingleStack"
+      ipFamilies: ["IPv4"]
   kubeControllerManager:
     service:
       selector:
