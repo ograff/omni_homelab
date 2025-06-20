@@ -1,7 +1,7 @@
 sonarr:
   image:
     repository: lscr.io/linuxserver/sonarr
-    tag: version-4.0.15.2940
+    tag: version-4.0.15.2939
   ingress:
     main:
       enabled: true
@@ -45,7 +45,7 @@ sonarr:
 radarr:
   image:
     repository: lscr.io/linuxserver/radarr
-    tag: 5.26.2.10099
+    tag: 5.26.2.10099-ls276
   ingress:
     main:
       enabled: true
