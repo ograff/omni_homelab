@@ -7,3 +7,4 @@ controller:
       enabled: true
   service:
     type: ClusterIP
+  replicaCount: 2
