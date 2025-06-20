@@ -16,7 +16,7 @@ sonarr:
       retain: true
       mountPath: /mnt/MediaAndTorrents
       type: nfs
-      server: proxmox.corgi-becrux.ts.net
+      server: 100.96.131.56
       path: /MainPool/BigTank/MediaAndTorrents
   ingress:
     main:
