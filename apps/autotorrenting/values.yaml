@@ -1,0 +1,382 @@
+sonarr:
+  image:
+    repository: lscr.io/linuxserver/sonarr
+    tag: version-4.0.11.2680
+  ingress:
+    main:
+      enabled: true
+  persistence:
+    config:
+      enabled: true
+      retain: true
+      size: 4Gi
+
+    media: &media_mount
+      enabled: true
+      retain: true
+      mountPath: /mnt/MediaAndTorrents
+      type: nfs
+      server: 192.168.45.3
+      path: /MainPool/BigTank/MediaAndTorrents
+  ingress:
+    main:
+      enabled: true
+      ingressClassName: nginx
+      annotations:
+        external-dns.alpha.kubernetes.io/target: "tunnel.2411.house"
+        external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
+        cert-manager.io/cluster-issuer: letsencrypt-prod
+        hajimari.io/appName: Sonarr
+        nginx.ingress.kubernetes.io/proxy-body-size: "0"
+        #hajimari.io/icon: file-document
+      hosts:
+        - host: &sonarr_host sonarr.2411.house
+          paths:
+            - path: /
+              pathType: Prefix
+      tls:
+        - secretName: sonarr-tls-certificate
+          hosts:
+            - *sonarr_host
+  dnsConfig:
+    options:
+      - name: ndots
+        value: "1"
+radarr:
+  image:
+    repository: lscr.io/linuxserver/radarr
+    tag: 5.16.3
+  ingress:
+    main:
+      enabled: true
+  persistence:
+    config:
+      enabled: true
+      retain: true
+      size: 4Gi
+
+    media: *media_mount
+  ingress:
+    main:
+      enabled: true
+      ingressClassName: nginx
+      annotations:
+        external-dns.alpha.kubernetes.io/target: "tunnel.2411.house"
+        external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
+        cert-manager.io/cluster-issuer: letsencrypt-prod
+        hajimari.io/appName: Radarr
+        #hajimari.io/icon: file-document
+        nginx.ingress.kubernetes.io/proxy-body-size: "0"
+      hosts:
+        - host: &radarr_host radarr.2411.house
+          paths:
+            - path: /
+              pathType: Prefix
+      tls:
+        - secretName: radarr-tls-certificate
+          hosts:
+            - *radarr_host
+  dnsConfig:
+    options:
+      - name: ndots
+        value: "1"
+jackett:
+  image:
+    repository: lscr.io/linuxserver/jackett
+    tag: 0.22.1109
+  ingress:
+    main:
+      enabled: true
+  persistence:
+    config:
+      enabled: true
+      retain: true
+      size: 4Gi
+
+  ingress:
+    main:
+      enabled: true
+      ingressClassName: nginx
+      annotations:
+        external-dns.alpha.kubernetes.io/target: "tunnel.2411.house"
+        external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
+        cert-manager.io/cluster-issuer: letsencrypt-prod
+        hajimari.io/appName: Jackett
+        #hajimari.io/icon: file-document
+        nginx.ingress.kubernetes.io/proxy-body-size: "0"
+      hosts:
+        - host: &jackett_host jackett.2411.house
+          paths:
+            - path: /
+              pathType: Prefix
+      tls:
+        - secretName: jackett-tls-certificate
+          hosts:
+            - *jackett_host
+  dnsConfig:
+    options:
+      - name: ndots
+        value: "1"
+flaresolverr:
+  image:
+    repository: 21hsmw/flaresolverr
+    tag: nodriver
+  ingress:
+    main:
+      enabled: false
+  dnsConfig:
+    options:
+      - name: ndots
+        value: "1"
+bazarr:
+  image:
+    repository: lscr.io/linuxserver/bazarr
+    tag: 1.4.3
+  ingress:
+    main:
+      enabled: true
+  persistence:
+    config:
+      enabled: true
+      retain: true
+      size: 4Gi
+    media: *media_mount
+
+  ingress:
+    main:
+      enabled: true
+      ingressClassName: nginx
+      annotations:
+        external-dns.alpha.kubernetes.io/target: "tunnel.2411.house"
+        external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
+        cert-manager.io/cluster-issuer: letsencrypt-prod
+        hajimari.io/appName: Bazarr
+        #hajimari.io/icon: file-document
+        nginx.ingress.kubernetes.io/proxy-body-size: "0"
+      hosts:
+        - host: &bazarr_host bazarr.2411.house
+          paths:
+            - path: /
+              pathType: Prefix
+      tls:
+        - secretName: bazarr-tls-certificate
+          hosts:
+            - *bazarr_host
+  dnsConfig:
+    options:
+      - name: ndots
+        value: "1"
+
+readarr-audio:
+  image:
+    repository: lscr.io/linuxserver/readarr
+    tag: nightly-version-0.2.1.1915
+  ingress:
+    main:
+      enabled: true
+  persistence:
+    config:
+      enabled: true
+      retain: true
+      size: 4Gi
+    media: *media_mount
+
+  ingress:
+    main:
+      enabled: true
+      ingressClassName: nginx
+      annotations:
+        external-dns.alpha.kubernetes.io/target: "tunnel.2411.house"
+        external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
+        cert-manager.io/cluster-issuer: letsencrypt-prod
+        hajimari.io/appName: Readarr Audio
+        #hajimari.io/icon: file-document
+        nginx.ingress.kubernetes.io/proxy-body-size: "0"
+      hosts:
+        - host: &readarr_audio_host readarr-audio.2411.house
+          paths:
+            - path: /
+              pathType: Prefix
+      tls:
+        - secretName: readarr-audio-tls-certificate
+          hosts:
+            - *readarr_audio_host
+  dnsConfig:
+    options:
+      - name: ndots
+        value: "1"
+calibre-web:
+  image:
+    repository: crocodilestick/calibre-web-automated
+    tag: V3.0.3
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: kubernetes.io/arch
+            operator: In
+            values:
+            - arm64
+  ingress:
+    main:
+      enabled: true
+  persistence:
+    config:
+      enabled: true
+      retain: true
+      size: 20Gi
+    books:
+      enabled: true
+      retain: true
+      mountPath: /calibre-library
+      type: nfs
+      server: 192.168.45.3
+      path: /MainPool/BigTank/MediaAndTorrents/Readarr2
+    ingest:
+      enabled: true
+      retain: true
+      mountPath: /cwa-book-ingest
+      type: nfs
+      server: 192.168.45.3
+      path: /MainPool/BigTank/MediaAndTorrents/cwa-book-ingest
+
+  ingress:
+    main:
+      enabled: true
+      ingressClassName: nginx
+      annotations:
+        external-dns.alpha.kubernetes.io/target: "tunnel.2411.house"
+        external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
+        cert-manager.io/cluster-issuer: letsencrypt-prod
+        hajimari.io/appName: Calibre Web
+        #hajimari.io/icon: file-document
+        nginx.ingress.kubernetes.io/proxy-body-size: "0"
+      hosts:
+        - host: &calibre_host calibre.2411.house
+          paths:
+            - path: /
+              pathType: Prefix
+      tls:
+        - secretName: calibre-tls-certificate
+          hosts:
+            - *calibre_host
+  dnsConfig:
+    options:
+      - name: ndots
+        value: "1"
+
+audiobookshelf:
+  image:
+    repository: advplyr/audiobookshelf
+    tag: 2.10.1
+  ingress:
+    main:
+      enabled: true
+  persistence:
+    config:
+      enabled: true
+      retain: true
+      size: 4Gi
+    media: *media_mount
+    metadata:
+      enable: true
+
+  ingress:
+    main:
+      enabled: true
+      ingressClassName: nginx
+      annotations:
+        external-dns.alpha.kubernetes.io/target: "tunnel.2411.house"
+        external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
+        cert-manager.io/cluster-issuer: letsencrypt-prod
+        hajimari.io/appName: Audiobookshelf
+        #hajimari.io/icon: file-document
+        external-dns.alpha.kubernetes.io/target: "tunnel.2411.house"
+        external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
+        nginx.ingress.kubernetes.io/proxy-body-size: "0"
+      hosts:
+        - host: &audiobookshelf_host audiobooks.2411.house
+          paths:
+            - path: /
+              pathType: Prefix
+      tls:
+        - secretName: audiobookshelf-tls-certificate
+          hosts:
+            - *audiobookshelf_host
+  dnsConfig:
+    options:
+      - name: ndots
+        value: "1"
+qbit:
+  # Default values for external-service.
+  # Ref: https://github.com/philippwaller/helm-charts/tree/main/charts/external-service
+
+
+  ## @section Common parameters
+  ##
+
+  ## @param nameOverride String to partially override common.names.fullname
+  nameOverride: ""
+
+  ## @param fullnameOverride String to fully override common.names.fullname
+  fullnameOverride: ""
+
+  ## @section Service Configuration
+  ##
+
+  service:
+    ## @param service.ip IP addresses of the external service
+    ip: 192.168.45.104
+    ## @param service.targetPort Port of the external service
+    targetPort: 8090
+    ## @param service.protocol Protocol of the external service
+    protocol: TCP
+    ## @param service.name Name of the external port
+    name: http
+    ## @param service.port Port of the internal Kubernetes service
+    port: 80
+    ## @param service.type Service type
+    type: ClusterIP
+    ## @param service.externalName Target for ExternalName type service
+    externalName: ""
+    ## @param service.extraPorts [array] An array of extra port configurations
+    extraPorts: []
+    #  - port: 25
+    #    targetPort: 25
+    #    name: smtp
+    #    protocol: TCP
+
+
+  ## @section Ingress Configuration
+  ## ref: https://kubernetes.io/docs/user-guide/ingress/
+  ##
+
+  ingress:
+    ## @param ingress.enabled Enable ingress record generation
+    enabled: true
+    ## @param ingress.className IngressClass that will be be used to implement the Ingress
+    className: "nginx"
+
+    ## @param ingress.annotations [object] Additional annotations for the Ingress resource.
+    annotations:
+      external-dns.alpha.kubernetes.io/target: "tunnel.2411.house"
+      external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+      hajimari.io/appName: Qbit
+      #hajimari.io/icon: file-document
+      external-dns.alpha.kubernetes.io/target: "tunnel.2411.house"
+      external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
+      nginx.ingress.kubernetes.io/proxy-body-size: "0"
+
+    ## @param ingress.hosts [object] An array with ingress host objects, under which service should be reachable
+    hosts:
+      - host: &qbit_host qbit.2411.house
+        paths:
+          - path: /
+            pathType: Prefix
+    ## @param ingress.tls [array] An array of TLS configurations
+    tls:
+      - secretName: qbit-tls
+        hosts:
+          - *qbit_host

@@ -1,0 +1,33 @@
+apiVersion: v2
+name: autotorrenting
+version: 0.0.0
+dependencies:
+- name: radarr
+  version: 16.3.2
+  repository: https://geek-cookbook.github.io/charts/
+- name: sonarr
+  version: 16.3.2
+  repository: https://geek-cookbook.github.io/charts/
+- name: jackett
+  version: 11.7.2
+  repository: https://geek-cookbook.github.io/charts/
+- name: flaresolverr
+  version: 5.4.2
+  repository: https://geek-cookbook.github.io/charts/
+- name: bazarr
+  version: 10.6.2
+  repository: https://geek-cookbook.github.io/charts/
+- name: readarr
+  alias: readarr-audio
+  version: 6.4.2
+  repository: https://geek-cookbook.github.io/charts/
+- name: calibre-web
+  version: 8.4.2
+  repository: https://geek-cookbook.github.io/charts/
+- name: audiobookshelf
+  version: 1.2.2
+  repository: https://geek-cookbook.github.io/charts/
+- name: external-service
+  version: 1.0.8
+  repository: https://charts.philippwaller.com/
+  alias: qbit
