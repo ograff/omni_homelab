@@ -269,7 +269,7 @@ calibre-web:
 audiobookshelf:
   image:
     repository: advplyr/audiobookshelf
-    tag: 2.10.1
+    tag: 2.25.1
   ingress:
     main:
       enabled: true
