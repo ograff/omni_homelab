@@ -124,6 +124,17 @@ home-assistant:
       # Load frontend themes from the themes folder
       frontend:
         themes: !include_dir_merge_named themes
+      prometheus:
+        namespace: hass
+        component_config_glob:
+          sensor.*_hum:
+            override_metric: humidity_percent
+          sensor.*_temp:
+            override_metric: temperature_c
+          sensor.temperature*:
+            override_metric: temperature_c
+          sensor.*_bat:
+            override_metric: battery_percent
 
       automation: !include automations.yaml
       script: !include scripts.yaml
