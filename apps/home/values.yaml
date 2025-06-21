@@ -525,6 +525,7 @@ zigbee2mqtt:
     data:
       enabled: true
       mountPath: /data
+      accessMode: ReadWriteOnce
   # -- zigbee2mqtt configuration settings.
   # This will be copied into the container's persistent storage at first run only.
   # Further configuration should be done in the application itself!
