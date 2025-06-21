@@ -511,13 +511,7 @@ zigbee2mqtt:
     # -- Enable and configure ingress settings for the chart under this key.
     # @default -- See values.yaml
     main:
-      enabled: true
-      ingressClassName: "nginx"
-      hosts:
-        - host: z2m.2411.house
-          paths:
-            path: /
-            pathType: Prefix
+      enabled: false
   
   # -- Configure persistence settings for the chart under this key.
   # @default -- See values.yaml
