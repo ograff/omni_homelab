@@ -24,7 +24,7 @@ home-assistant:
 
 
   # Environment variables
-  env: []
+  env:
   - name: TZ
     value: America/Los_Angeles
 
