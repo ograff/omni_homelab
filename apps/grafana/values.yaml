@@ -12,11 +12,6 @@ grafana:
     hosts:
       - grafana.2411.house
   grafana.ini:
-    auth:
-      disable_login_form: true
-      disable_signout_menu: true
-    auth.basic:
-      enabled: false
     auth.anonymous:
       enabled: true
   # Allow Omni Workload Proxying for this service
@@ -24,6 +19,10 @@ grafana:
     annotations:
       omni-kube-service-exposer.sidero.dev/port: "50082"
       omni-kube-service-exposer.sidero.dev/label: Grafana
+  persistence:
+    enabled: true
+  serviceMonitor:
+    enabled: true
   dashboardProviders:
     dashboardproviders.yaml:
       apiVersion: 1
