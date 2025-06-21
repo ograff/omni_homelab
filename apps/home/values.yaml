@@ -522,7 +522,7 @@ zigbee2mqtt:
             # -- Ignored if not kubeVersion >= 1.14-0
             pathType: Prefix
             service:
-              name: main
+              name: home-zigbee2mqtt
               port: 8080
 
   
