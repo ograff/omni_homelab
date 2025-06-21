@@ -309,11 +309,11 @@ home-assistant:
     scrapeInterval: 30s
     labels: {}
     # Bearer token authentication configuration
-    bearerToken: {}
+    bearerToken:
       # Name of the secret containing the bearer token
-      # secretName: ""
+      secretName: "ha-prom"
       # Key in the secret containing the bearer token
-      # secretKey: ""
+      secretKey: "bearer"
 
   # Addons configuration for additional services
   addons:
