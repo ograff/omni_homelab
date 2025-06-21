@@ -369,3 +369,110 @@ home-assistant:
   # Annotations to add to the deployment
   deploymentAnnotations: {}
 
+emqx-enterprise:
+  ## Default values for emqx.
+  ## This is a YAML-formatted file.
+  ## Declare variables to be passed into your templates.
+
+  ## It is recommended to have odd number of nodes in a cluster, otherwise the emqx cluster cannot be automatically healed in case of net-split.
+  replicaCount: 1
+  image:
+    repository: emqx/emqx-enterprise
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: ""
+
+  persistence:
+    enabled: true
+    size: 40Mi
+
+  resources: {}
+    # limits:
+    #   cpu: 500m
+    #   memory: 512Mi
+    # requests:
+    #   cpu: 500m
+    #   memory: 512Mi
+
+  ## EMQX configuration item, see the documentation (https://hub.docker.com/r/emqx/emqx-enterprise)
+  emqxConfig:
+    EMQX_CLUSTER__DISCOVERY_STRATEGY: "dns"
+    EMQX_DASHBOARD__DEFAULT_USERNAME: "admin"
+    EMQX_DASHBOARD__DEFAULT_PASSWORD: "public"
+
+  ingress:
+    ## ingress for EMQX Dashboard
+    dashboard:
+      enabled: true
+      ingressClassName: nginx
+      annotations: {}
+        # kubernetes.io/ingress.class: nginx
+        # kubernetes.io/tls-acme: "true"
+      path: /
+      pathType: ImplementationSpecific
+      hosts:
+      - emqx.2411.house
+      tls: []
+    ## ingress for MQTT
+    mqtt:
+      enabled: false
+      # ingressClassName: haproxy
+      annotations: {}
+        # kubernetes.io/ingress.class: haproxy
+        # kubernetes.io/tls-acme: "true"
+        # haproxy-ingress.github.io/tcp-service-port: "8883"
+        # haproxy-ingress.github.io/proxy-protocol: "v2"
+      path: /
+      pathType: ImplementationSpecific
+      hosts:
+      - mqtt.emqx.local
+      tls: []
+    ws:
+      enabled: false
+      # ingressClassName: haproxy
+      annotations: {}
+        # kubernetes.io/ingress.class: haproxy
+        # kubernetes.io/tls-acme: "true"
+        # haproxy-ingress.github.io/tcp-service-port: "8883"
+        # haproxy-ingress.github.io/proxy-protocol: "v2"
+      path: /mqtt
+      pathType: ImplementationSpecific
+      hosts:
+        - mqtt.emqx.local
+      tls: []
+
+  podSecurityContext:
+    enabled: true
+    fsGroup: 1000
+    fsGroupChangePolicy: Always
+    runAsUser: 1000
+    supplementalGroups:
+      - 1000
+
+  containerSecurityContext:
+    enabled: true
+    runAsNonRoot: true
+    runAsUser: 1000
+
+  metrics:
+    enabled: true
+    type: prometheus
+
+  ssl:
+    enabled: false
+    useExisting: false
+    existingName: emqx-tls
+    dnsnames: []
+    commonName:
+    issuer:
+      name: letsencrypt-dns
+      kind: ClusterIssuer
+
+  ## Setting PodDisruptionBudget.
+  ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb
+  ##
+  pdb:
+    enabled: false
+    maxUnavailable: 1
+
+
