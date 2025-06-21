@@ -51,7 +51,7 @@ home-assistant:
       # kubernetes.io/ingress.class: nginx
       # kubernetes.io/tls-acme: "true"
     hosts:
-      - host: grafana.2411.house
+      - host: ha.2411.house
         paths:
           - path: /
             pathType: ImplementationSpecific
