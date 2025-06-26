@@ -710,6 +710,7 @@ node-red:
   #  name: settings-config
   #  configMapName: settings-config
   sidecar:
+    enabled: true
     extraNodeModules:
       - node-red-contrib-actionflows
       - node-red-contrib-home-assistant-websocket
