@@ -656,7 +656,7 @@ node-red:
     # -- Enable an ingress resource for the server
     enabled: true
     # -- Defines which ingress controller will implement the resource
-    className: "ingress-nginx"
+    className: "nginx"
     # -- Additional ingress annotations
     annotations: {}
       # kubernetes.io/ingress.class: nginx
