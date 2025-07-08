@@ -208,74 +208,64 @@ audiobookshelf:
       - name: ndots
         value: "1"
 qbit:
-  # Default values for external-service.
-  # Ref: https://github.com/philippwaller/helm-charts/tree/main/charts/external-service
 
-
-  ## @section Common parameters
-  ##
-
-  ## @param nameOverride String to partially override common.names.fullname
-  nameOverride: ""
-
-  ## @param fullnameOverride String to fully override common.names.fullname
-  fullnameOverride: ""
-
-  ## @section Service Configuration
-  ##
-
+  image:
+    # -- image repository
+    repository: ghcr.io/linuxserver/qbittorrent
+    # -- image pull policy
+    pullPolicy: IfNotPresent
+    # -- image tag
+    tag: 5.1.2
+  env:
+    TZ: America/Los_Angeles
+    DOCKER_MODS: ghcr.io/gabe565/linuxserver-mod-vuetorrent
   service:
-    ## @param service.ip IP addresses of the external service
-    ip: 192.168.45.104
-    ## @param service.targetPort Port of the external service
-    targetPort: 8090
-    ## @param service.protocol Protocol of the external service
-    protocol: TCP
-    ## @param service.name Name of the external port
-    name: http
-    ## @param service.port Port of the internal Kubernetes service
-    port: 80
-    ## @param service.type Service type
-    type: ClusterIP
-    ## @param service.externalName Target for ExternalName type service
-    externalName: ""
-    ## @param service.extraPorts [array] An array of extra port configurations
-    extraPorts: []
-    #  - port: 25
-    #    targetPort: 25
-    #    name: smtp
-    #    protocol: TCP
-
-
-  ## @section Ingress Configuration
-  ## ref: https://kubernetes.io/docs/user-guide/ingress/
-  ##
+    bittorrent:
+      type: NodePort
+      enabled: true
+  persistence:
+    config:
+      enabled: true
+    downloads:
+      enabled: true
+      type: pvc
+      existingClaim: downloads
+      size: 90Gi
+    media:
+      enabled: true
+      mountPath: /mnt/media_and_torrents
+      type: pvc
+      existingClaim: torrent-pvc
+    vuetorrent:
+      enabled: true
+      type: emptyDir
 
   ingress:
-    ## @param ingress.enabled Enable ingress record generation
-    enabled: true
-    ## @param ingress.className IngressClass that will be be used to implement the Ingress
-    className: "nginx"
+    main:
+      ## @param ingress.enabled Enable ingress record generation
+      enabled: true
+      ## @param ingress.className IngressClass that will be be used to implement the Ingress
+      className: "nginx"
 
-    ## @param ingress.annotations [object] Additional annotations for the Ingress resource.
-    annotations:
-      external-dns.alpha.kubernetes.io/target: "tunnel.2411.house"
-      external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
-      cert-manager.io/cluster-issuer: letsencrypt-prod
-      hajimari.io/appName: Qbit
-      #hajimari.io/icon: file-document
-      external-dns.alpha.kubernetes.io/target: "tunnel.2411.house"
-      external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
-      nginx.ingress.kubernetes.io/proxy-body-size: "0"
+      ## @param ingress.annotations [object] Additional annotations for the Ingress resource.
+      annotations:
+        external-dns.alpha.kubernetes.io/target: "tunnel.2411.house"
+        external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
+        cert-manager.io/cluster-issuer: letsencrypt-prod
+        hajimari.io/appName: Qbit
+        #hajimari.io/icon: file-document
+        external-dns.alpha.kubernetes.io/target: "tunnel.2411.house"
+        external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
+        nginx.ingress.kubernetes.io/proxy-body-size: "0"
 
-    ## @param ingress.hosts [object] An array with ingress host objects, under which service should be reachable
-    hosts:
-      - host: &qbit_host qbit.2411.house
-        paths:
-          - path: /
-            pathType: Prefix
-    ## @param ingress.tls [array] An array of TLS configurations
-    tls:
-      - secretName: qbit-tls
-        hosts:
-          - *qbit_host
+      ## @param ingress.hosts [object] An array with ingress host objects, under which service should be reachable
+      hosts:
+        - host: &qbit_host qbit.2411.house
+          paths:
+            - path: /
+              pathType: Prefix
+      ## @param ingress.tls [array] An array of TLS configurations
+      tls:
+        - secretName: qbit-tls
+          hosts:
+            - *qbit_host
