@@ -226,7 +226,7 @@ qbit:
         bittorrent:
           enabled: true
           port: 51413
-          nodePort: 51413
+          nodePort: 30400
           protocol: TCP
   persistence:
     config:
