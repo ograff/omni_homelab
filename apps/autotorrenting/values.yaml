@@ -250,7 +250,7 @@ qbit:
       ## @param ingress.enabled Enable ingress record generation
       enabled: true
       ## @param ingress.className IngressClass that will be be used to implement the Ingress
-      className: "nginx"
+      ingressClassName: "nginx"
 
       ## @param ingress.annotations [object] Additional annotations for the Ingress resource.
       annotations:
