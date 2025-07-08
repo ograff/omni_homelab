@@ -208,7 +208,6 @@ audiobookshelf:
       - name: ndots
         value: "1"
 qbit:
-
   image:
     # -- image repository
     repository: lscr.io/linuxserver/qbittorrent
@@ -223,7 +222,12 @@ qbit:
     bittorrent:
       type: NodePort
       enabled: true
-      nodeport: 6881
+      ports:
+        bittorrent:
+          enabled: true
+          port: 51413
+          nodePort: 51413
+          protocol: TCP
   persistence:
     config:
       enabled: true
