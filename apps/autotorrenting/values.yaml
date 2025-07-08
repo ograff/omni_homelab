@@ -13,6 +13,7 @@ sonarr:
 
     media: &media_mount
       enabled: true
+      mountPath: /mnt/MediaAndTorrents
       type: pvc
       existingClaim: torrent-pvc
   ingress:
