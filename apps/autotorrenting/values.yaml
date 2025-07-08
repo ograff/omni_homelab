@@ -231,6 +231,7 @@ qbit:
   persistence:
     config:
       enabled: true
+      size: 1Gi
     downloads:
       enabled: true
       type: pvc
