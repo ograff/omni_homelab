@@ -211,14 +211,14 @@ qbit:
 
   image:
     # -- image repository
-    repository: ghcr.io/linuxserver/qbittorrent
+    repository: lscr.io/linuxserver/qbittorrent
     # -- image pull policy
     pullPolicy: IfNotPresent
     # -- image tag
     tag: 5.1.2
   env:
     TZ: America/Los_Angeles
-    DOCKER_MODS: ghcr.io/gabe565/linuxserver-mod-vuetorrent
+    DOCKER_MODS: ghcr.io/vuetorrent/vuetorrent-lsio-mod:latest
   service:
     bittorrent:
       type: NodePort
