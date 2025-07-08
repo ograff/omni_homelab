@@ -223,6 +223,7 @@ qbit:
     bittorrent:
       type: NodePort
       enabled: true
+      nodeport: 6881
   persistence:
     config:
       enabled: true
