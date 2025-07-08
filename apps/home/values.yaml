@@ -384,7 +384,7 @@ emqx-enterprise:
 
   persistence:
     enabled: true
-    size: 40Mi
+    size: 400Mi
 
   resources: {}
     # limits:
