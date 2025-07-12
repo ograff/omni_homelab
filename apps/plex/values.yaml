@@ -1,0 +1,168 @@
+plex-media-server:
+  # -- The docker image information for the pms application
+  image:
+    # -- The public dockerhub registry
+    registry: index.docker.io
+    repository: plexinc/pms-docker
+    # -- If unset use "latest"
+    tag: "latest"
+    sha: ""
+    pullPolicy: Always
+
+  global:
+    # -- Allow parent charts to override registry hostname
+    imageRegistry: ""
+
+  # -- Optional DNS configuration for the Pod
+  dnsConfig: {}
+
+  ingress:
+    # -- Specify if an ingress resource for the pms server should be created or not
+    enabled: true
+
+    # -- The ingress class that should be used
+    ingressClassName: "ingress-nginx"
+
+    # -- The url to use for the ingress reverse proxy to point at this pms instance
+    url: plex.2411.house
+
+    # -- Optional TLS configuration to provide valid https connections
+    # using an existing SSL certificate
+    tls: []
+    #   - hosts:
+    #       - plex.example.com
+    #     secretName: cert-example-com
+
+    # -- Custom annotations to put on the ingress resource
+    annotations: {}
+
+  pms:
+    # -- The storage class to use when provisioning the pms config volume
+    # this needs to be created manually, null will use the default
+    storageClassName: null
+
+    # -- The volume size to provision for the PMS database
+    configStorage: 8Gi
+
+    # -- Name of an existing `PersistentVolumeClaim` for the PMS database
+    # NOTE: When set, 'configStorage' and 'storageClassName' are ignored.
+    configExistingClaim: ""
+
+    resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+
+    # -- Security context for PMS pods
+    securityContext: {}
+
+    # -- Enable process namespace sharing within the pod.
+    shareProcessNamespace: false
+
+    # -- Add kubernetes liveness probe to pms container.
+    livenessProbe:
+      httpGet:
+        path: /identity
+        port: 32400
+      initialDelaySeconds: 60
+      periodSeconds: 60
+      timeoutSeconds: 1
+      failureThreshold: 3
+
+    # -- Add kubernetes readiness probe to pms container.
+    readinessProbe:
+      httpGet:
+        path: /identity
+        port: 32400
+      initialDelaySeconds: 60
+      periodSeconds: 60
+      timeoutSeconds: 1
+      failureThreshold: 3
+
+  service:
+    type: ClusterIP
+    port: 32400
+
+    # -- Deprecated: Pre-defined IP address of the PMS service.
+    # Used by cloud providers to connect the resulting load balancer service to a
+    # pre-existing static IP.
+    # Users are encouraged to use implementation-specific annotations when available instead.
+    # Ref: https://kubernetes.io/docs/concepts/services-networking/service/#loadbalancer
+    # loadBalancerIP: ""
+
+    # Port to use when type of service is "NodePort" (32400 by default)
+    # nodePort: 32400
+
+    # when NodePort is used, plex is unable to determine user IP
+    # all traffic seems to come from within the cluster
+    # setting this to 'Local' will allow Plex to determine the actual IP of user.
+    # used to determine bitrate for remote transcoding
+    # but the pods can only be accessed by the Node IP where the pod is running
+    # Read more here: https://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip
+    # https://access.redhat.com/solutions/7028639
+    # externalTrafficPolicy: Local
+
+    # -- Optional extra annotations to add to the service resource
+    annotations: {}
+
+  nodeSelector:
+    kubernetes.io/hostname: "nas-worker"
+
+  tolerations: []
+
+  affinity: {}
+
+  priorityClassName: ""
+
+  # -- Common Labels for all resources created by this chart.
+  commonLabels: {}
+
+  extraEnv:
+    TZ: "America/Los_Angeles"
+  #   PLEX_UPDATE_CHANNEL: "5"
+  #   PLEX_UID: "uid of plex user"
+  #   PLEX_GID: "group id of plex user"
+  # a list of CIDRs that can use the server without authentication
+    # this is only used for the first startup of PMS
+  #   ALLOWED_NETWORKS: "0.0.0.0/0"
+
+  # -- Optionally specify additional volume mounts for the PMS and init containers.
+  extraVolumeMounts:
+    - name: dev-dri
+      mountPath: /dev/dri
+    - name: media_and_torrents
+      mountPath: /mnt/MediaAndTorrents
+
+  # -- Optionally specify additional volumes for the pod.
+  extraVolumes:
+    - name: dev-dri
+      hostPath:
+        path: /dev/dri
+        type: Directory
+    - name: media_and_torrents
+      hostPath:
+        path: /var/mnt/MainPool/BigTank/MediaAndTorrents
+        type: Directory
+
+  extraContainers: []
+  # extraContainers:
+  #  - name: <container name>
+  #    args:
+  #      - ...
+  #    image: <docker images>
+  #    imagePullPolicy: IfNotPresent
+  #    resources:
+  #      limits:
+  #        memory: 128Mi
+  #      requests:
+  #        cpu: 100m
+  #        memory: 128Mi
+  #    volumeMounts:
+  #      - ...
