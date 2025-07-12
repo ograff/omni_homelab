@@ -88,7 +88,7 @@ plex-media-server:
       failureThreshold: 3
 
   service:
-    type: ClusterIP
+    type: NodePort
     port: 32400
 
     # -- Deprecated: Pre-defined IP address of the PMS service.
