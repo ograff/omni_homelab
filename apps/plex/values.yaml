@@ -42,7 +42,7 @@ plex-media-server:
     storageClassName: null
 
     # -- The volume size to provision for the PMS database
-    configStorage: 8Gi
+    configStorage: 200Gi
 
     # -- Name of an existing `PersistentVolumeClaim` for the PMS database
     # NOTE: When set, 'configStorage' and 'storageClassName' are ignored.
