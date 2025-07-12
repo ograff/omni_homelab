@@ -18,7 +18,7 @@ plex-media-server:
 
   ingress:
     # -- Specify if an ingress resource for the pms server should be created or not
-    enabled: true
+    enabled: false
 
     # -- The ingress class that should be used
     ingressClassName: "ingress"
@@ -99,7 +99,7 @@ plex-media-server:
     # loadBalancerIP: ""
 
     # Port to use when type of service is "NodePort" (32400 by default)
-    # nodePort: 32400
+    nodePort: 32400
 
     # when NodePort is used, plex is unable to determine user IP
     # all traffic seems to come from within the cluster
@@ -108,7 +108,7 @@ plex-media-server:
     # but the pods can only be accessed by the Node IP where the pod is running
     # Read more here: https://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip
     # https://access.redhat.com/solutions/7028639
-    # externalTrafficPolicy: Local
+    externalTrafficPolicy: Local
 
     # -- Optional extra annotations to add to the service resource
     annotations: {}
