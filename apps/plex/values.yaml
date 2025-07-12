@@ -137,7 +137,7 @@ plex-media-server:
   extraVolumeMounts:
     - name: dev-dri
       mountPath: /dev/dri
-    - name: media_and_torrents
+    - name: media-and-torrents
       mountPath: /mnt/MediaAndTorrents
 
   # -- Optionally specify additional volumes for the pod.
@@ -146,7 +146,7 @@ plex-media-server:
       hostPath:
         path: /dev/dri
         type: Directory
-    - name: media_and_torrents
+    - name: media-and-torrents
       hostPath:
         path: /var/mnt/MainPool/BigTank/MediaAndTorrents
         type: Directory
