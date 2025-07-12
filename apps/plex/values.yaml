@@ -61,7 +61,8 @@ plex-media-server:
     #   memory: 128Mi
 
     # -- Security context for PMS pods
-    securityContext: {}
+    securityContext:
+       privileged: true
 
     # -- Enable process namespace sharing within the pod.
     shareProcessNamespace: false
