@@ -2,7 +2,7 @@ plex-media-server:
   # -- The docker image information for the pms application
   statefulSet:
     # -- Optional extra annotations to add to the service resource
-    annotations:
+    podAnnotations:
       k8s.v1.cni.cncf.io/networks: '[
               { "name": "static-nas",
                 "ips": [ "192.168.45.247/24" ]
