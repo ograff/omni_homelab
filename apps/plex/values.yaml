@@ -21,7 +21,7 @@ plex-media-server:
     enabled: true
 
     # -- The ingress class that should be used
-    ingressClassName: "ingress-nginx"
+    ingressClassName: "ingress"
 
     # -- The url to use for the ingress reverse proxy to point at this pms instance
     url: plex.2411.house
@@ -138,7 +138,7 @@ plex-media-server:
     - name: dev-dri
       mountPath: /dev/dri
     - name: media-and-torrents
-      mountPath: /mnt/MediaAndTorrents
+      mountPath: /media
 
   # -- Optionally specify additional volumes for the pod.
   extraVolumes:
