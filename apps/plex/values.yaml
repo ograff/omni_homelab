@@ -95,7 +95,7 @@ plex-media-server:
       failureThreshold: 3
 
   service:
-    type: NodePort
+    type: ClusterIP
     port: 32400
 
     # -- Deprecated: Pre-defined IP address of the PMS service.
@@ -115,7 +115,7 @@ plex-media-server:
     # but the pods can only be accessed by the Node IP where the pod is running
     # Read more here: https://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip
     # https://access.redhat.com/solutions/7028639
-    externalTrafficPolicy: Local
+    #externalTrafficPolicy: Local
 
     # -- Optional extra annotations to add to the service resource
     annotations: {}
