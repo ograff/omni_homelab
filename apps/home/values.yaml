@@ -76,7 +76,7 @@ home-assistant:
 
   # Node selector settings for scheduling the pod on specific nodes
   nodeSelector:
-    kubernetes.io/hostname: pi5-1
+    kubernetes.io/hostname: pi5-2
 
   initContainers: []
   # Example of integrating a custom component before starting the Home Assistant container
