@@ -4,7 +4,7 @@ version: 0.0.0
 dependencies:
   - name: home-assistant
     repository: https://pajikos.github.io/home-assistant-helm-chart/
-    version: 0.3.6
+    version: 0.3.10
   - name: emqx-enterprise
     repository: https://repos.emqx.io/charts
     version: 5.10.0
