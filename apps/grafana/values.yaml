@@ -1,4 +1,6 @@
 grafana:
+  deploymentStrategy:
+    type: RollingUpdate
   sidecar:
     dashboards:
       enabled: true
