@@ -297,3 +297,14 @@ qbit:
           paths:
             - path: /
               pathType: Prefix
+  serviceMonitor:
+    main:
+      enabled: true
+      endpoints:
+        - port: metrics
+          path: /metrics
+          interval: 30s
+          scrapeTimeout: 10s
+      labels:
+        release: prometheus  # Match your Prometheus operator labels
+      serviceName: "{{ include \"bjw-s.common.lib.chart.names.fullname\" $ }}"
