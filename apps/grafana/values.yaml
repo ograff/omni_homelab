@@ -1,6 +1,6 @@
 grafana:
   deploymentStrategy:
-    type: RollingUpdate
+    type: Recreate
   sidecar:
     dashboards:
       enabled: true
