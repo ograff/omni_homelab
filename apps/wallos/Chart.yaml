@@ -1,0 +1,7 @@
+apiVersion: v2
+name: wallos
+version: 0.0.0
+dependencies:
+  - name: wallos
+    repository: https://helm-charts.rm3l.org
+    version: 0.1.0
