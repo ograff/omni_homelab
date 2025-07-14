@@ -247,6 +247,14 @@ qbit:
     TZ: America/Los_Angeles
     DOCKER_MODS: ghcr.io/vuetorrent/vuetorrent-lsio-mod:latest
   service:
+    main:
+      ports:
+        http:
+          port: 8080
+        metrics:
+          port: 8000
+          targetPort: 8000
+
     bittorrent:
       type: NodePort
       enabled: true
