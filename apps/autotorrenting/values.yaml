@@ -1,7 +1,7 @@
 sonarr:
   image:
     repository: lscr.io/linuxserver/sonarr
-    tag: version-4.0.14.2939
+    tag: version-4.0.15.2941
   ingress:
     main:
       enabled: true
@@ -168,7 +168,7 @@ bazarr:
 audiobookshelf:
   image:
     repository: advplyr/audiobookshelf
-    tag: 2.25.1
+    tag: 2.26.0
   ingress:
     main:
       enabled: true
