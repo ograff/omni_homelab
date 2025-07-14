@@ -215,6 +215,34 @@ qbit:
     pullPolicy: IfNotPresent
     # -- image tag
     tag: 5.1.2
+  sidecars:
+    qbittorrent-exporter:
+      image: martabal/qbittorrent-exporter:latest
+      ports:
+        - name: metrics
+          containerPort: 8000
+          protocol: TCP
+      env:
+        - name: QBITTORRENT_HOST
+          value: "http://localhost:8080"  # qBittorrent web UI port
+        - name: QBITTORRENT_USERNAME
+          value: "admin"  # Change to your qBittorrent username
+        - name: QBITTORRENT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: qbittorrent-secret  # You'll need to create this secret
+              key: password
+        - name: EXPORTER_PORT
+          value: "8000"
+        - name: EXPORTER_LOG_LEVEL
+          value: "INFO"
+      resources:
+        limits:
+          cpu: 100m
+          memory: 128Mi
+        requests:
+          cpu: 50m
+          memory: 64Mi
   env:
     TZ: America/Los_Angeles
     DOCKER_MODS: ghcr.io/vuetorrent/vuetorrent-lsio-mod:latest
