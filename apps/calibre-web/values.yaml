@@ -23,6 +23,7 @@ app-template:
   ingress:
     # -- Enable and configure ingress settings for the chart under this key.
     main:
+      className: nginx
       hosts:
         - host: calibre.2411.house
           paths:
