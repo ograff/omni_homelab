@@ -32,3 +32,26 @@ app-template:
               service:
                 identifier: main
                 port: http
+  persistence:
+    config:
+      enabled: true
+      type: persistentVolumeClaim
+      existingClaim: calibre-web-config
+      globalMounts:
+        - path: /config
+    ingest:
+      type: persistentVolumeClaim
+      enabled: true
+      existingClaim: cwa-ingest
+      globalMounts:
+        - path: /cwa-book-ingest
+    library:
+      type: persistentVolumeClaim
+      enabled: true
+      existingClaim: cwa-lib
+      globalMounts:
+        - path: /calibre-library
+    data-cache:
+      existingClaim: cwa-cache
+      globalMounts:
+        - path: /cache
