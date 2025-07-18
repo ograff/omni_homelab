@@ -17,13 +17,6 @@ dependencies:
 - name: bazarr
   version: 10.6.2
   repository: https://geek-cookbook.github.io/charts/
-- name: readarr
-  alias: readarr-audio
-  version: 6.4.2
-  repository: https://geek-cookbook.github.io/charts/
-- name: calibre-web
-  version: 8.4.2
-  repository: https://geek-cookbook.github.io/charts/
 - name: audiobookshelf
   version: 1.2.2
   repository: https://geek-cookbook.github.io/charts/
