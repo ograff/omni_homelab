@@ -24,7 +24,7 @@ app-template:
     # -- Enable and configure ingress settings for the chart under this key.
     main:
       hosts:
-        - host: calibre-web.2411.house
+        - host: calibre.2411.house
           paths:
             - path: /
               pathType: Prefix
