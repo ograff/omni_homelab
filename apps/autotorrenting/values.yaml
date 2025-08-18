@@ -241,7 +241,7 @@ qbit:
           cpu: 400m
           memory: 128Mi
         requests:
-          cpu: 2000m
+          cpu: 200m
           memory: 64Mi
   env:
     TZ: America/Los_Angeles
