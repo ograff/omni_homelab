@@ -238,10 +238,10 @@ qbit:
           value: "INFO"
       resources:
         limits:
-          cpu: 100m
+          cpu: 400m
           memory: 128Mi
         requests:
-          cpu: 50m
+          cpu: 2000m
           memory: 64Mi
   env:
     TZ: America/Los_Angeles
