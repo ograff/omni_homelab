@@ -31,7 +31,7 @@ app-template:
             SFTP_PASS:
               valueFrom:
                 secretKeyRef:
- 0                 name: sftp-connector-secrets
+                  name: sftp-connector-secrets
                   key: SFTP_PASS
   service:
     main:
