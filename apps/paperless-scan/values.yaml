@@ -1,0 +1,55 @@
+app-template:
+  defaultPodOptions:
+    nodeSelector:
+      kubernetes.io/hostname: ograff-linux-mini-vm
+  controllers:
+    main:
+      containers:
+        main:
+          probes:
+            liveness:
+              enabled: false
+            readiness:
+              enabled: false
+            startup:
+              enabled: false
+          image:
+            repository: ghcr.io/ograff/sftp-paperless-bridge
+            tag: 0.1.6
+          env:
+            API_URL: http://paperless-paperless-ngx.paperless:8000/
+            API_KEY:
+              valueFrom:
+                secretKeyRef:
+                  name: sftp-connector-secrets
+                  key: API_KEY
+            HOST_KEY:
+              valueFrom:
+                secretKeyRef:
+                  name: sftp-connector-secrets
+                  key: HOST_KEY
+            SFTP_PASS:
+              valueFrom:
+                secretKeyRef:
+ 0                 name: sftp-connector-secrets
+                  key: SFTP_PASS
+  service:
+    main:
+      type: NodePort
+      annotations:
+        external-dns.alpha.kubernetes.io/hostname: scan-to-paperless.2411.house
+      ports:
+        http:
+          enabled: false
+          port: 0
+        sftp:
+          nodePort: 30000
+          enabled: true
+          primary: true
+          protocol: TCP
+          port: 2222
+          targetPort: 2222
+  ingress:
+    main:
+      enabled: false
+      hosts: []
