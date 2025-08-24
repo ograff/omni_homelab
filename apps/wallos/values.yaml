@@ -9,7 +9,7 @@ wallos:
     repository: ghcr.io/ellite/wallos
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "3.3.0"
+    tag: "3.3.1"
 
   imagePullSecrets: []
   nameOverride: ""
