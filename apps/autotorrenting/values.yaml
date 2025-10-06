@@ -43,7 +43,7 @@ sonarr:
 radarr:
   image:
     repository: lscr.io/linuxserver/radarr
-    tag: 5.27.5.10198
+    tag: version-5.27.5.10198
   ingress:
     main:
       enabled: true
