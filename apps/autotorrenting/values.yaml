@@ -43,7 +43,7 @@ sonarr:
 radarr:
   image:
     repository: lscr.io/linuxserver/radarr
-    tag: 5.26.2.10099-ls276
+    tag: 5.27.5.10198
   ingress:
     main:
       enabled: true
@@ -81,7 +81,7 @@ radarr:
 jackett:
   image:
     repository: lscr.io/linuxserver/jackett
-    tag: 0.22.2032
+    tag: 0.24.72
   ingress:
     main:
       enabled: true
@@ -168,7 +168,7 @@ bazarr:
 audiobookshelf:
   image:
     repository: advplyr/audiobookshelf
-    tag: 2.26.0
+    tag: 2.29.0
   ingress:
     main:
       enabled: true
