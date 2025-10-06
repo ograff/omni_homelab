@@ -13,7 +13,7 @@ home-assistant:
     # Image pull policy
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "2025.8.3"
+    tag: "2025.10.1"
 
   # Annotations to add to the pod
   podAnnotations:
