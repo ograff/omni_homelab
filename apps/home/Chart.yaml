@@ -11,6 +11,3 @@ dependencies:
   - name: zigbee2mqtt
     repository: https://andrenarchy.github.io/helm-charts/
     version: 9.33.0
-  - name: node-red
-    repository: https://schwarzit.github.io/node-red-chart/
-    version: 0.34.2
