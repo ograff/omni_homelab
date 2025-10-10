@@ -326,7 +326,7 @@ home-assistant:
         # Image pull policy for the code-server image
         pullPolicy: IfNotPresent
         # Tag for the code-server image
-        tag: "4.103.1"
+        tag: "4.104.3"
       # Service settings
       service:
         # Service type (ClusterIP, NodePort, LoadBalancer, or ExternalName)
