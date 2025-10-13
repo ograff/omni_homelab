@@ -9,7 +9,7 @@ app-template:
             repository: crocodilestick/calibre-web-automated
             # -- image tag
             # this example is not automatically updated, so be sure to use the latest image
-            tag: V3.0.4
+            tag: V3.1.4
             # -- image pull policy
             pullPolicy: IfNotPresent
           env:
