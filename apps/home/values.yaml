@@ -7,8 +7,7 @@ home-assistant:
   replicaCount: 1
 
   # Deployment strategy - Recreate ensures old pod is terminated before new one starts
-  strategy:
-    type: Recreate
+  deploymentStrategy: Recreate
 
   # Image settings
   image:
@@ -84,6 +83,7 @@ home-assistant:
       command: [ "/bin/sh", "-c" ]
       args:
       - |
+        apk add curl unzip
         cd /git
         curl -L https://github.com/custom-components/pyscript/releases/download/1.6.4/hass-custom-pyscript.zip > hass-custom-pyscript.zip
         cd /pyscript
