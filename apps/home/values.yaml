@@ -6,9 +6,6 @@ home-assistant:
   # Number of replicas for the deployment
   replicaCount: 1
 
-  # Deployment strategy - Recreate ensures old pod is terminated before new one starts
-  deploymentStrategy: Recreate
-
   # Image settings
   image:
     # Image pull policy
