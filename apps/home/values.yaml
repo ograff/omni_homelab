@@ -92,19 +92,6 @@ home-assistant:
       volumeMounts:
         - name: pyscript
           mountPath: /pyscript
-    - name: setup-config
-      image: mikefarah/yq:4
-      securityContext:
-        runAsUser: 0
-      command: ["/bin/sh", "-c"]
-      args:
-      - /bin/sh /mnt/init/init.sh
-      volumeMounts:
-        - name: init-volume
-          mountPath: /mnt/init/init.sh
-          subPath: init.sh
-        - name: config-volume
-          mountPath: /config-templates
 
   # Configuration for Home Assistant
   configuration:
