@@ -6,6 +6,10 @@ home-assistant:
   # Number of replicas for the deployment
   replicaCount: 1
 
+  # Deployment strategy - Recreate ensures old pod is terminated before new one starts
+  strategy:
+    type: Recreate
+
   # Image settings
   image:
     # Image pull policy
@@ -74,20 +78,33 @@ home-assistant:
   nodeSelector:
     kubernetes.io/hostname: pi5-2
 
-  #initContainers: []
-  # Example of integrating a custom component before starting the Home Assistant container
-  # Uses emptyDir custom-components, see below
-  # - name: init-panasonic-cc
-  #   image: alpine/git
-  #   command: [ "/bin/sh", "-c" ]
-  #   args:
-  #   - |
-  #     git clone https://github.com/sockless-coding/panasonic_cc.git /git/panasonic_cc
-  #     cp -r /git/panasonic_cc/custom_components/panasonic_cc/* /panasonic_cc
-  #     chown -R 1000:1000 /panasonic_cc/*
-  #   volumeMounts:
-  #   - name: custom-components
-  #     mountPath: /panasonic_cc
+  initContainers:
+    - name: init-pyscript
+      image: alpine/git
+      command: [ "/bin/sh", "-c" ]
+      args:
+      - |
+        cd /git
+        curl -L https://github.com/custom-components/pyscript/releases/download/1.6.4/hass-custom-pyscript.zip > hass-custom-pyscript.zip
+        cd /pyscript
+        unzip /git/hass-custom-pyscript.zip
+        chown -R 1000:1000 /pyscript/*
+      volumeMounts:
+        - name: pyscript
+          mountPath: /pyscript
+    - name: setup-config
+      image: mikefarah/yq:4
+      securityContext:
+        runAsUser: 0
+      command: ["/bin/sh", "-c"]
+      args:
+      - /bin/sh /mnt/init/init.sh
+      volumeMounts:
+        - name: init-volume
+          mountPath: /mnt/init/init.sh
+          subPath: init.sh
+        - name: config-volume
+          mountPath: /config-templates
 
   # Configuration for Home Assistant
   configuration:
@@ -191,41 +208,6 @@ home-assistant:
         echo "Scenes file not found, creating a new one"
         touch /config/scenes.yaml
       fi
-
-    initContainers:
-      - name: init-panasonic-cc
-        image: alpine/git
-        command: [ "/bin/sh", "-c" ]
-        args:
-        - |
-          cd /git
-          curl -L https://github.com/custom-components/pyscript/releases/download/1.6.4/hass-custom-pyscript.zip > hass-custom-pyscript.zip
-          cd /pyscript
-          unzip /git/hass-custom-pyscript.zip
-          chown -R 1000:1000 /pyscript/*
-        volumeMounts:
-        - name: pyscript
-          mountPath: /pyscript
-      - name: setup-config
-        image: mikefarah/yq:4
-        securityContext:
-          runAsUser: 0
-        command: ["/bin/sh", "-c"]
-        args:
-        - /bin/sh /mnt/init/init.sh
-        # env:
-        # - name: FORCE_INIT
-        #   valueFrom:
-        #     configMapKeyRef:
-        #       name: init-script
-        #       key: forceInit
-        # Home Assistant configuration volume will be mounted to /config automatically
-        volumeMounts:
-          - name: init-volume
-            mountPath: /mnt/init/init.sh
-            subPath: init.sh
-          - name: config-volume
-            mountPath: /config-templates
 
   # Persistence values for the Home Assistant instance
   persistence:
