@@ -463,7 +463,7 @@ zigbee2mqtt:
     # -- image repository
     repository: koenkk/zigbee2mqtt
     # -- image tag
-    tag: 2.6.2
+    tag: 2.6.3
     # -- image pull policy
     pullPolicy: IfNotPresent
 
