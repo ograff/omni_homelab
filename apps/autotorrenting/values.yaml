@@ -81,7 +81,7 @@ radarr:
 jackett:
   image:
     repository: lscr.io/linuxserver/jackett
-    tag: 0.24.415
+    tag: 0.24.487
   ingress:
     main:
       enabled: true
