@@ -29,6 +29,8 @@ home-assistant:
   service:
     # Service type (ClusterIP, NodePort, LoadBalancer, or ExternalName)
     type: ClusterIP
+    # Static to allow non-k8s things to hit MQTT
+    clusterIP: 10.99.180.114
     # Service port
     port: 8080
     # Annotations to add to the service
