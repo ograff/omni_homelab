@@ -47,8 +47,6 @@ spec:
                 adsb,feed.planespotters.net,30004,beast_reduce_plus_out;
                 adsb,feed.theairtraffic.com,30004,beast_reduce_plus_out;
                 adsb,data.avdelphi.com,24999,beast_reduce_plus_out;
-                adsb,skyfeed.hpradar.com,30004,beast_reduce_plus_out;
-
             - name: UPDATE_TAR1090
               value: "true"
             - name: TAR1090_MESSAGERATEINTITLE
