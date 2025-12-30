@@ -28,13 +28,14 @@ home-assistant:
   # Service settings
   service:
     # Service type (ClusterIP, NodePort, LoadBalancer, or ExternalName)
-    type: ClusterIP
+    type: LoadBalancer
     # Static to allow non-k8s things to hit MQTT
     clusterIP: 10.99.180.114
     # Service port
     port: 8080
     # Annotations to add to the service
     annotations: {}
+    loadBalancerClass: tailscale
 
   # Ingress settings
   ingress:
