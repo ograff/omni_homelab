@@ -1,0 +1,301 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: adsb-feed
+  namespace: adsb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: adsb-feed
+  template:
+    metadata:
+      labels:
+        app: adsb-feed
+    spec:
+      volumes:
+        - name: globe-history
+          persistentVolumeClaim:
+            claimName: adsb-feed-globe-history
+        - name: collectd
+          persistentVolumeClaim:
+            claimName: adsb-feed-collectd
+      containers:
+        - name: ultrafeeder
+          volumeMounts:
+            - name: globe-history
+              mountPath: /var/globe_history
+            - name: collectd
+              mountPath: /var/lib/collectd
+          image: ghcr.io/sdr-enthusiasts/docker-adsb-ultrafeeder:telegraf-build-872
+          env:
+            - name: UUID
+              value: cbd01ab0-b9a1-4ecb-961d-b17912063f41
+            - name: READSB_NET_ONLY
+              value: "true"
+            - name: READSB_NET_RAW_INPUT_PORT
+              value: "30001"
+            - name: TZ
+              value: "America/Los_Angeles"
+            - name: READSB_STATS_RANGE
+              value: "true"
+            - name: ULTRAFEEDER_CONFIG
+              value: |
+                adsb,feed.adsb.fi,30004,beast_reduce_plus_out;
+                adsb,in.adsb.lol,30004,beast_reduce_plus_out;
+                adsb,feed.airplanes.live,30004,beast_reduce_plus_out;
+                adsb,feed.planespotters.net,30004,beast_reduce_plus_out;
+                adsb,feed.theairtraffic.com,30004,beast_reduce_plus_out;
+                adsb,data.avdelphi.com,24999,beast_reduce_plus_out;
+                adsb,skyfeed.hpradar.com,30004,beast_reduce_plus_out;
+
+            - name: UPDATE_TAR1090
+              value: "true"
+            - name: TAR1090_MESSAGERATEINTITLE
+              value: "true"
+            - name: TAR1090_PAGETITLE
+              value: "Oliver's Feeder"
+            - name: TAR1090_PLANECOUNTINTITLE
+              value: "true"
+            - name: TAR1090_ENABLE_AC_DB
+              value: "true"
+            - name: TAR1090_FLIGHTAWARELINKS
+              value: "true"
+            - name: HEYWHATSTHAT_PANORAMA_ID
+              value: "TDBH7N1X"
+            - name: HEYWHATSTHAT_ALTS
+              value: "3000,12000"
+            - name: TAR1090_SITESHOW
+              value: "true"
+            - name: TAR1090_RANGE_OUTLINE_COLORED_BY_ALTITUDE
+              value: "true"
+            - name: TAR1090_RANGE_OUTLINE_WIDTH
+              value: "2.0"
+            - name: TAR1090_RANGERINGSDISTANCES
+              value: "50,100,150,200"
+            - name: TAR1090_RANGERINGSCOLORS
+              value: "'#1A237E','#0D47A1','#42A5F5','#64B5F6'"
+            - name: TAR1090_USEROUTEAPI
+              value: "true"
+            - name: UPDATE_TAR1090_DAYS
+              value: "1"
+            - name: READSB_ENABLE_TRACES
+              value: "true"
+            - name: MAX_GLOBE_HISTORY
+              value: "30"
+            - name: GRAPHS1090_HIDE_SYSTEM
+              value: "true"
+            - name: PROMETHEUS_ENABLE
+              value: "true"
+            - name: TAR1090_DEFAULTCENTERLAT
+              value: "33.801218"
+            - name: TAR1090_DEFAULTCENTERLON
+              value: "-118.121639"
+            - name: LAT
+              value: "33.801218"
+            - name: LONG
+              value: "-118.121639"
+
+
+          ports:
+            - containerPort: 30005
+
+        - name: mqtt-bridge
+          image: eclipse-mosquitto
+          command:
+            - sh
+            - -c
+            - mosquitto_sub -h home-emqx-enterprise.home.svc.cluster.local -t stream1090 -u stream1090 -P stream1090 -i stream1090_sub | nc localhost 30001
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: piaware
+  namespace: adsb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: piaware
+  template:
+    metadata:
+      labels:
+        app: piaware
+    spec:
+      containers:
+        - name: piaware
+          image: ghcr.io/sdr-enthusiasts/docker-piaware:latest-build-640
+          env:
+            - name: BEASTHOST
+              value: ultrafeeder
+            - name: BEASTPORT
+              value: "30005"
+            - name: FEEDER_ID
+              value: "81fa3cd1-2bb8-4607-8186-8ff63e57a6fa"
+            - name: ALLOW_MLAT
+              value: "no"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ultrafeeder
+  namespace: adsb
+spec:
+  selector:
+    app: adsb-feed
+  ports:
+    - port: 30005
+      targetPort: 30005
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fr24
+  namespace: adsb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fr24
+  template:
+    metadata:
+      labels:
+        app: fr24
+    spec:
+      dnsPolicy: ClusterFirst
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
+      containers:
+        - name: fr24
+          image: ghcr.io/sdr-enthusiasts/docker-flightradar24:latest-build-825
+          env:
+            - name: BEASTHOST
+              value: ultrafeeder
+            - name: BEASTPORT
+              value: "30005"
+            - name: FR24KEY
+              value: "a562422baf74bc99"
+          ports:
+            - containerPort: 8754
+---
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: adsb-feed
+  labels:
+    app: adsb-feed
+spec:
+  selector:
+    app: adsb-feed
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+    - name: metrics-readsb
+      port: 9273
+      targetPort: 9273
+    - name: metrics-autogain
+      port: 9274
+      targetPort: 9274
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: adsb-feed
+  annotations:
+    external-dns.alpha.kubernetes.io/target: "tunnel.2411.house"
+    external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
+    #cert-manager.io/cluster-issuer: letsencrypt-prod
+    hajimari.io/appName: ADS-B
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+spec:
+  ingressClassName: nginx
+  tls:
+  #  - secretName: adsb-tls-certificate
+  #    hosts:
+  #      - adsb.2411.house
+  rules:
+    - host: adsb.2411.house
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: adsb-feed
+                port:
+                  number: 80
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: adsb-feed-graphs-rewrite
+  annotations:
+    external-dns.alpha.kubernetes.io/target: "tunnel.2411.house"
+    external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
+  #  cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/rewrite-target: /graphs1090/$1
+spec:
+  ingressClassName: nginx
+  #tls:
+  #  - secretName: adsb-tls-certificate
+  #    hosts:
+  #      - adsbgraphs.2411.house
+  rules:
+    - host: adsbgraphs.2411.house
+      http:
+        paths:
+          - path: /(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: adsb-feed
+                port:
+                  number: 80
+
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: adsb-feed
+  labels:
+    app: adsb-feed
+spec:
+  selector:
+    matchLabels:
+      app: adsb-feed
+  endpoints:
+    - port: metrics-readsb
+      interval: 30s
+      path: /metrics
+    - port: metrics-autogain
+      interval: 30s
+      path: /metrics
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: adsb-feed-globe-history
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Gi
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: adsb-feed-collectd
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Gi
