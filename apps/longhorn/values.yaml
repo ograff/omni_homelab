@@ -31,6 +31,7 @@ longhorn:
         omni-kube-service-exposer.sidero.dev/port: "80"
         omni-kube-service-exposer.sidero.dev/label: Longhorn
   preUpgradeChecker:
+    jobEnabled: false
     upgradeVersionCheck: false
   ingress:
     enabled: true
