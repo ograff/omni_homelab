@@ -7,7 +7,7 @@ dependencies:
     version: 0.3.37
   - name: emqx-enterprise
     repository: https://repos.emqx.io/charts
-    version: 5.10.2
+    version: 6.1.0
   - name: zigbee2mqtt
     repository: https://andrenarchy.github.io/helm-charts/
     version: 9.35.0
