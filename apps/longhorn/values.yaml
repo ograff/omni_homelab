@@ -2,6 +2,14 @@ longhorn:
   # Default values for longhorn.
   # This is a YAML-formatted file.
   # Declare variables to be passed into your templates.
+  image:
+    manager:
+      # -- Registry for the Longhorn Manager image.
+      registry: ""
+      # -- Repository for the Longhorn Manager image.
+      repository: longhornio/longhorn-manager
+      # -- Tag for the Longhorn Manager image.
+      tag: v1.10.1-hotfix-2
   persistence:
     # -- Replica count of the default Longhorn StorageClass.
     defaultClassReplicaCount: 2
@@ -23,7 +31,7 @@ longhorn:
         omni-kube-service-exposer.sidero.dev/port: "80"
         omni-kube-service-exposer.sidero.dev/label: Longhorn
   preUpgradeChecker:
-    jobEnabled: false
+    upgradeVersionCheck: false
   ingress:
     enabled: true
     ingressClassName: "nginx"
