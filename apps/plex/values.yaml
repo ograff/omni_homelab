@@ -116,7 +116,8 @@ plex-media-server:
     #externalTrafficPolicy: Local
 
     # -- Optional extra annotations to add to the service resource
-    annotations: {}
+    annotations:
+      tailscale.com/expose: "true"
 
   nodeSelector:
     kubernetes.io/hostname: "nas-worker"
