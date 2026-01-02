@@ -95,9 +95,8 @@ plex-media-server:
       failureThreshold: 3
 
   service:
-    type: LoadBalancer
+    type: ClusterIP
     port: 32400
-    loadBalancerClass: tailscale
 
     # -- Deprecated: Pre-defined IP address of the PMS service.
     # Used by cloud providers to connect the resulting load balancer service to a
