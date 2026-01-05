@@ -71,8 +71,8 @@ home-assistant:
     #   memory: 128Mi
 
   # Node selector settings for scheduling the pod on specific nodes
-  nodeSelector:
-    kubernetes.io/hostname: pi5-2
+  # nodeSelector:
+  #   kubernetes.io/hostname: pi5-2
 
   initContainers:
     - name: init-pyscript
