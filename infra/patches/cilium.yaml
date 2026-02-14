@@ -1948,7 +1948,7 @@ cluster:
                     runAsGroup: 65532
                     runAsNonRoot: true
                     runAsUser: 65532
-                  image: "quay.io/cilium/hubble-relay:v1.17.4@sha256:c16de12a64b8b56de62b15c1652d036253b40cd7fa643d7e1a404dc71dc66441"
+                  image: "quay.io/cilium/hubble-relay:v1.19.0@sha256:7f17e5bb51a9f35bbc8e7a9ad5e347f03ff8003c2e5cc81171e8727a10bf03b4"
                   imagePullPolicy: IfNotPresent
                   command:
                     - hubble-relay
