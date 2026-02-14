@@ -3,5 +3,5 @@ name: cloudflared
 version: 0.0.0
 dependencies:
   - name: cloudflared
-    version: 1.7.4
+    version: 1.7.5
     repository: https://charts.kubito.dev
