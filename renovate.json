@@ -1,6 +1,98 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:recommended"
+    "config:recommended",
+    "docker:enableMajor",
+    ":disableRateLimiting"
+  ],
+  "kubernetes": {
+    "fileMatch": [
+      "apps/.+\\.yaml$",
+      "infra/.+\\.yaml$"
+    ]
+  },
+  "helm-values": {
+    "fileMatch": [
+      "apps/.+/values\\.yaml$",
+      "ingress-nginx/values\\.yaml$"
+    ]
+  },
+  "helmv3": {
+    "fileMatch": [
+      "apps/.+/Chart\\.yaml$"
+    ]
+  },
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Kustomize remote base git references",
+      "fileMatch": [
+        "apps/.+/kustomization\\.yaml$"
+      ],
+      "matchStrings": [
+        "github\\.com/(?<depName>[^/]+/[^/]+)/[^?]+\\?ref=(?<currentValue>[^\\s\"']+)"
+      ],
+      "datasourceTemplate": "github-releases",
+      "versioningTemplate": "semver"
+    },
+    {
+      "customType": "regex",
+      "description": "Inline container images in sidecar definitions (image: repo:tag on single line)",
+      "fileMatch": [
+        "apps/.+/values\\.yaml$"
+      ],
+      "matchStrings": [
+        "image:\\s*(?<depName>[a-zA-Z0-9.\\-_/]+):(?<currentValue>[a-zA-Z0-9.\\-_]+)\\s"
+      ],
+      "datasourceTemplate": "docker"
+    },
+    {
+      "customType": "regex",
+      "description": "Docker mods via DOCKER_MODS env var",
+      "fileMatch": [
+        "apps/.+/values\\.yaml$"
+      ],
+      "matchStrings": [
+        "DOCKER_MODS:\\s*(?<depName>[a-zA-Z0-9.\\-_/]+):(?<currentValue>[a-zA-Z0-9.\\-_]+)"
+      ],
+      "datasourceTemplate": "docker"
+    },
+    {
+      "customType": "regex",
+      "description": "GitHub release downloads in shell scripts",
+      "fileMatch": [
+        "apps/.+/values\\.yaml$"
+      ],
+      "matchStrings": [
+        "github\\.com/(?<depName>[^/]+/[^/]+)/releases/download/(?<currentValue>[^/]+)/"
+      ],
+      "datasourceTemplate": "github-releases"
+    }
+  ],
+  "packageRules": [
+    {
+      "description": "Pin images currently using 'latest' tag to digest for update tracking",
+      "matchDatasources": ["docker"],
+      "matchCurrentValue": "/^latest/",
+      "pinDigests": true
+    },
+    {
+      "description": "Group all ADSB/SDR enthusiast images together",
+      "matchDatasources": ["docker"],
+      "matchPackagePatterns": ["sdr-enthusiasts"],
+      "groupName": "sdr-enthusiasts images"
+    },
+    {
+      "description": "Group all linuxserver.io images together",
+      "matchDatasources": ["docker"],
+      "matchPackagePatterns": ["linuxserver"],
+      "groupName": "linuxserver.io images"
+    },
+    {
+      "description": "Auto-merge patch-level Helm chart updates",
+      "matchDatasources": ["helm"],
+      "matchUpdateTypes": ["patch"],
+      "automerge": true
+    }
   ]
 }
