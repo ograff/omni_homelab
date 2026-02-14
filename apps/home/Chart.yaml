@@ -10,4 +10,4 @@ dependencies:
     version: 5.10.2
   - name: zigbee2mqtt
     repository: https://andrenarchy.github.io/helm-charts/
-    version: 9.35.0
+    version: 9.37.0
