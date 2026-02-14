@@ -82,7 +82,7 @@ home-assistant:
       - |
         apk add curl unzip
         cd /git
-        curl -L https://github.com/custom-components/pyscript/releases/download/1.6.4/hass-custom-pyscript.zip > hass-custom-pyscript.zip
+        curl -L https://github.com/custom-components/pyscript/releases/download/1.7.0/hass-custom-pyscript.zip > hass-custom-pyscript.zip
         cd /pyscript
         unzip /git/hass-custom-pyscript.zip
         chown -R 1000:1000 /pyscript/*
