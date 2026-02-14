@@ -42,7 +42,7 @@
         "apps/.+/values\\.yaml$"
       ],
       "matchStrings": [
-        "image:\\s*(?<depName>[a-zA-Z0-9.\\-_/]+):(?<currentValue>[a-zA-Z0-9.\\-_]+)\\s"
+        "image:\\s*(?<depName>[a-zA-Z0-9.\\-_/]+):(?<currentValue>[a-zA-Z0-9.\\-_]+)(?:\\s|$)"
       ],
       "datasourceTemplate": "docker"
     },
@@ -73,7 +73,7 @@
     {
       "description": "Pin images currently using 'latest' tag to digest for update tracking",
       "matchDatasources": ["docker"],
-      "matchCurrentValue": "/^latest/",
+      "matchCurrentValue": "latest*",
       "pinDigests": true
     },
     {
