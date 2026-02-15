@@ -1,0 +1,10 @@
+homebox:
+  ingress:
+    enabled: true
+    className: nginx
+    hosts:
+      - host: homebox.2411.house
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls: []
