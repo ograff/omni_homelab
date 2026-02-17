@@ -2,6 +2,11 @@ app-template:
   defaultPodOptions:
     nodeSelector:
       kubernetes.io/hostname: ograff-linux-mini-vm
+    annotations:
+      k8s.v1.cni.cncf.io/networks: '[
+              { "name": "static-home",
+                "ips": [ "192.168.45.248/24" ]
+              }]'
   controllers:
     main:
       containers:
