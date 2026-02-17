@@ -92,9 +92,6 @@ paperless-ngx:
   # @default -- See [values.yaml](./values.yaml)
   postgresql:
     enabled: true
-    image:
-      repository: bitnami/postgresql
-      tag: 17.6.0-debian-12-r4
     auth:
       database: paperless
       postgresPassword: paperless
@@ -127,8 +124,7 @@ paperless-ngx:
   # @default -- See [values.yaml](./values.yaml)
   redis:
     image:
-      repository: bitnami/redis
-      tag: 8.2.1-debian-12-r0
+      tag: 7.2.4-debian-12-r12
     enabled: true
     auth:
       enabled: true
