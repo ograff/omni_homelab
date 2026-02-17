@@ -95,7 +95,7 @@ paperless-ngx:
       security:
         allowInsecureImages: true
     image:
-      repository: bitnamilegacy/postgres
+      repository: bitnamilegacy/postgresql
     enabled: true
     auth:
       database: paperless
