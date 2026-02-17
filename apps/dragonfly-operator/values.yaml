@@ -1,7 +1,3 @@
 dragonfly-operator:
   serviceMonitor:
     enabled: true
-  grafanaDashboard:
-    enabled: true
-    grafanaOperator:
-      enabled: true
