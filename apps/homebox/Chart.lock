@@ -1,0 +1,6 @@
+dependencies:
+- name: homebox
+  repository: https://bythehugo.github.io/homebox-helm/
+  version: 0.2.0
+digest: sha256:6363adf0c82db2286d00b5982aff2daaa0787f7aaf0c0436f4a2bdcf82f4ef01
+generated: "2026-02-17T01:19:06.103176-08:00"
