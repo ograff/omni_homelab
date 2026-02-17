@@ -1,7 +1,7 @@
 app-template:
   defaultPodOptions:
     nodeSelector:
-      kubernetes.io/hostname: ograff-linux-mini-vm
+      kubernetes.io/hostname: nas-worker
     annotations:
       k8s.v1.cni.cncf.io/networks: '[
               { "name": "static-home",
