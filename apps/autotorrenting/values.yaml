@@ -190,9 +190,6 @@ audiobookshelf:
         external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
         cert-manager.io/cluster-issuer: letsencrypt-prod
         hajimari.io/appName: Audiobookshelf
-        #hajimari.io/icon: file-document
-        external-dns.alpha.kubernetes.io/target: "tunnel.2411.house"
-        external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
         nginx.ingress.kubernetes.io/proxy-body-size: "0"
       hosts:
         - host: &audiobookshelf_host audiobooks.2411.house
@@ -294,9 +291,6 @@ qbit:
         external-dns.alpha.kubernetes.io/target: "tunnel.2411.house"
         external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
         hajimari.io/appName: Qbit
-        #hajimari.io/icon: file-document
-        external-dns.alpha.kubernetes.io/target: "tunnel.2411.house"
-        external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
         nginx.ingress.kubernetes.io/proxy-body-size: "0"
 
       ## @param ingress.hosts [object] An array with ingress host objects, under which service should be reachable

@@ -1,0 +1,26 @@
+external-dns:
+  sources:
+    - ingress
+    - service
+
+  provider:
+    name: cloudflare
+
+  env:
+    - name: CF_API_TOKEN
+      valueFrom:
+        secretKeyRef:
+          name: cloudflare-api-token
+          key: cloudflare_api_token
+
+  domainFilters:
+    - 2411.house
+
+  policy: sync
+
+  registry: txt
+  txtOwnerId: homelab
+  txtPrefix: _externaldns.
+
+  serviceMonitor:
+    enabled: true

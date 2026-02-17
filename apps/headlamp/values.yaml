@@ -11,8 +11,8 @@ headlamp:
     enabled: true
     # -- Annotations for Ingress resource
     annotations:
-      {}
-      # kubernetes.io/tls-acme: "true"
+      external-dns.alpha.kubernetes.io/target: "tunnel.2411.house"
+      external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
   
     # -- Additional labels to add to the Ingress resource
     labels: {}
