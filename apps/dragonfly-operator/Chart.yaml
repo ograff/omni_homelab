@@ -1,0 +1,7 @@
+apiVersion: v2
+name: dragonfly-operator
+version: 0.0.0
+dependencies:
+  - name: dragonfly-operator
+    repository: oci://ghcr.io/dragonflydb/dragonfly-operator/helm
+    version: v1.4.0
