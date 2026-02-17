@@ -91,6 +91,9 @@ paperless-ngx:
   #    [[ref]](https://github.com/bitnami/charts/tree/main/bitnami/postgresql)
   # @default -- See [values.yaml](./values.yaml)
   postgresql:
+    global:
+      security:
+        allowInsecureImages: true
     image:
       repository: bitnamilegacy/postgres
     enabled: true
@@ -125,6 +128,9 @@ paperless-ngx:
   #    [[ref]](https://github.com/bitnami/charts/tree/main/bitnami/redis)
   # @default -- See [values.yaml](./values.yaml)
   redis:
+    global:
+      security:
+        allowInsecureImages: true
     image:
       repository: bitnamilegacy/redis
       tag: 7.2.4-debian-12-r12
