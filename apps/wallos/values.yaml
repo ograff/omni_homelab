@@ -44,9 +44,9 @@ wallos:
   ingress:
     enabled: true
     className: "nginx"
-    annotations: {}
-      # kubernetes.io/ingress.class: nginx
-      # kubernetes.io/tls-acme: "true"
+    annotations:
+      external-dns.alpha.kubernetes.io/target: "tunnel.2411.house"
+      external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
     hosts:
       - host: wallos.2411.house
         paths:

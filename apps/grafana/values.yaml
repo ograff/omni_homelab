@@ -11,6 +11,9 @@ grafana:
   ingress:
     enabled: true
     ingressClassName: nginx
+    annotations:
+      external-dns.alpha.kubernetes.io/target: "tunnel.2411.house"
+      external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
     hosts:
       - grafana.2411.house
   grafana.ini:

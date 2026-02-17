@@ -17,6 +17,9 @@ openspeedtest:
   ingress:
     enabled: true
     className: nginx
+    annotations:
+      external-dns.alpha.kubernetes.io/target: "tunnel.2411.house"
+      external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
     hosts:
       - host: speedtest.2411.house
         paths:
