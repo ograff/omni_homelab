@@ -1,0 +1,7 @@
+apiVersion: v2
+name: homebox
+version: 0.0.0
+dependencies:
+  - name: homebox
+    repository: https://bythehugo.github.io/homebox-helm/
+    version: 0.2.0
