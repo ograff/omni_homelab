@@ -16,6 +16,8 @@ paperless-ngx:
     PAPERLESS_DATE_ORDER: MDY
     PAPERLESS_ENABLE_HTTP_REMOTE_USER: true
     PAPERLESS_HTTP_REMOTE_USER_HEADER_NAME: HTTP_CF_ACCESS_AUTHENTICATED_USER_EMAIL
+    # -- Dragonfly Redis connection
+    PAPERLESS_REDIS: redis://paperless-dragonfly.paperless.svc.cluster.local:6379
     # -- CloudNativePG database connection
     PAPERLESS_DBENGINE: postgresql
     PAPERLESS_DBHOST: paperless-pg-rw
@@ -130,25 +132,7 @@ paperless-ngx:
   #    [[ref]](https://github.com/bitnami/charts/tree/main/bitnami/redis)
   # @default -- See [values.yaml](./values.yaml)
   redis:
-    global:
-      security:
-        allowInsecureImages: true
-    image:
-      repository: bitnamilegacy/redis
-      tag: 7.2.4-debian-12-r12
-    enabled: true
-    auth:
-      enabled: true
-      username: ""
-      # Use an existing secret for redis auth. Do this if you're using Argo to manage your instance or otherwise using helm template under the hood
-      #     The secret name can vary, but the password key must be redis-password.
-      existingSecret: paperless-redis
-      existingSecretPasswordKey: redis-password
-    master:
-      persistence:
-        enabled: false
-    replica:
-      replicaCount: 0
+    enabled: false
   sidecars:
     exporter:
       image: ghcr.io/hansmi/prometheus-paperless-exporter:latest
