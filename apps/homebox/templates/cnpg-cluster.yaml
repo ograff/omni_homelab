@@ -1,0 +1,24 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: homebox-pg
+  namespace: homebox
+spec:
+  imageName: ghcr.io/cloudnative-pg/postgresql:16.8
+  instances: 3
+
+  storage:
+    size: 8Gi
+    storageClass: local-single
+
+  bootstrap:
+    initdb:
+      database: homebox
+      owner: homebox
+
+  enableSuperuserAccess: true
+
+  monitoring:
+    enablePodMonitor: true
+
+  primaryUpdateStrategy: unsupervised

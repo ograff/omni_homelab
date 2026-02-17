@@ -1,0 +1,57 @@
+homebox:
+  image:
+    repository: sysadminsmedia/homebox
+    pullPolicy: IfNotPresent
+    tag: 0.23.1
+
+  env:
+    TZ: America/Los_Angeles
+    HBOX_MODE: production
+    HBOX_DATABASE_DRIVER: postgres
+    HBOX_STORAGE_DATA: /data
+    HBOX_WEB_PORT: 7745
+    HBOX_LOG_LEVEL: info
+    HBOX_LOG_FORMAT: text
+    HBOX_OPTIONS_ALLOW_REGISTRATION: true
+    HBOX_OPTIONS_AUTO_INCREMENT_ASSET_ID: true
+    HBOX_OPTIONS_ALLOW_ANALYTICS: false
+
+  postgresql:
+    enabled: false
+
+  externalPostgresql:
+    host: homebox-pg-rw
+    port: 5432
+    auth:
+      username:
+        existingSecret: homebox-pg-app
+        existingSecretKey: username
+      password:
+        existingSecret: homebox-pg-app
+        existingSecretKey: password
+      database:
+        existingSecret: homebox-pg-app
+        existingSecretKey: dbname
+
+  ingress:
+    enabled: true
+    className: nginx
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+      external-dns.alpha.kubernetes.io/target: "tunnel.2411.house"
+      external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
+      hajimari.io/appName: Homebox
+    hosts:
+      - host: &host homebox.2411.house
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - hosts:
+          - *host
+        secretName: homebox-tls-secret
+
+  persistence:
+    capacity: 5Gi
+    accessModes:
+      - ReadWriteOnce
