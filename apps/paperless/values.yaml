@@ -16,6 +16,21 @@ paperless-ngx:
     PAPERLESS_DATE_ORDER: MDY
     PAPERLESS_ENABLE_HTTP_REMOTE_USER: true
     PAPERLESS_HTTP_REMOTE_USER_HEADER_NAME: HTTP_CF_ACCESS_AUTHENTICATED_USER_EMAIL
+    # -- CloudNativePG database connection
+    PAPERLESS_DBENGINE: postgresql
+    PAPERLESS_DBHOST: paperless-pg-rw
+    PAPERLESS_DBPORT: "5432"
+    PAPERLESS_DBNAME: paperless
+    PAPERLESS_DBUSER:
+      valueFrom:
+        secretKeyRef:
+          name: paperless-pg-app
+          key: username
+    PAPERLESS_DBPASS:
+      valueFrom:
+        secretKeyRef:
+          name: paperless-pg-app
+          key: password
 
   service:
     # -- Configures service settings for the chart.
@@ -91,20 +106,7 @@ paperless-ngx:
   #    [[ref]](https://github.com/bitnami/charts/tree/main/bitnami/postgresql)
   # @default -- See [values.yaml](./values.yaml)
   postgresql:
-    global:
-      security:
-        allowInsecureImages: true
-    image:
-      repository: bitnamilegacy/postgresql
-    enabled: true
-    auth:
-      database: paperless
-      postgresPassword: paperless
-    primary:
-      persistence:
-        enabled: true
-        # storageClass: ""
-        size: 8Gi
+    enabled: false
 
   # -- Enable and configure mariadb database subchart under this key.
   #    If enabled, the app's db envs will be set for you.
