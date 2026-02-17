@@ -1,0 +1,52 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: paperless-pg-source
+  namespace: paperless
+type: kubernetes.io/basic-auth
+stringData:
+  username: postgres
+  password: paperless
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: paperless-pg
+  namespace: paperless
+spec:
+  imageName: ghcr.io/cloudnative-pg/postgresql:16.8
+  instances: 3
+
+  storage:
+    size: 8Gi
+    storageClass: local-single
+
+  bootstrap:
+    initdb:
+      database: paperless
+      owner: paperless
+      import:
+        type: microservice
+        databases:
+          - paperless
+        source:
+          externalCluster: paperless-bitnami
+
+  externalClusters:
+    - name: paperless-bitnami
+      connectionParameters:
+        host: paperless-postgresql.paperless.svc.cluster.local
+        port: "5432"
+        user: postgres
+        dbname: paperless
+        sslmode: disable
+      password:
+        name: paperless-pg-source
+        key: password
+
+  enableSuperuserAccess: true
+
+  monitoring:
+    enablePodMonitor: true
+
+  primaryUpdateStrategy: unsupervised
