@@ -91,6 +91,8 @@ paperless-ngx:
   #    [[ref]](https://github.com/bitnami/charts/tree/main/bitnami/postgresql)
   # @default -- See [values.yaml](./values.yaml)
   postgresql:
+    image:
+      repository: bitnamilegacy/postgres
     enabled: true
     auth:
       database: paperless
@@ -124,6 +126,7 @@ paperless-ngx:
   # @default -- See [values.yaml](./values.yaml)
   redis:
     image:
+      repository: bitnamilegacy/redis
       tag: 7.2.4-debian-12-r12
     enabled: true
     auth:
