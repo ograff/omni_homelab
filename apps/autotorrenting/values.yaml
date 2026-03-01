@@ -310,3 +310,103 @@ qbit:
       labels:
         release: prometheus  # Match your Prometheus operator labels
       serviceName: "{{ include \"bjw-s.common.lib.chart.names.fullname\" $ }}"
+cross-seed:
+  # See reference documentation at https://github.com/trueforge-org/truecharts/blob/master/charts/library/common/values.yaml
+
+  global:
+    resources:
+      limits:
+        memory: 1000Mi
+      requests:
+        cpu: 75m
+        memory: 200Mi
+
+#  image:
+#    repository: ghcr.io/cross-seed/cross-seed
+#    pullPolicy: IfNotPresent
+#    tag: 6.13.6
+
+  fallbackDefaults:
+    probeType: tcp
+
+  service:
+    main:
+      ports:
+        main:
+          port: 2468
+
+  workload:
+    main:
+      strategy: Recreate
+      podSpec:
+        containers:
+          main:
+            command:
+              - "/usr/bin/catatonit"
+              - "--"
+              - "/usr/local/bin/cross-seed"
+              - daemon
+  #            - --verbose
+            probes:
+              liveness:
+                type: tcp
+              readiness:
+                type: tcp
+              startup:
+                type: tcp
+
+  configmap:
+    crossseed-config:
+      enabled: true
+      data:
+        config.js: |
+          module.exports = {
+            verbose: true,
+            delay: 60,
+            outputDir: null,
+            linkDirs: ["/mnt/media_and_torrents/_linkdirs"],
+            linkType: "hardlink",
+            action: "inject",
+            matchMode: "partial",
+            skipRecheck: true,
+            sonarr: ["http://autotorrenting-sonarr:8989/?apikey=9c3dda0b9b044cce8db8bfa5ddc7b9d3"],
+            radarr: ["http://autotorrenting-radarr:7878/?apikey=692ddba0e56645f0a72a134f1f5cb7b5"],
+            includeSingleEpisodes: true,
+            fuzzySizeThreshold: 0.02,
+            torznab: [
+                "http://autotorrenting-jackett:9117/api/v2.0/indexers/torrentleech/results/torznab/api?apikey=f30nr726gk531e1xa06u1sla0jr4709p&t=search&cat=&q=",
+                "http://autotorrenting-jackett:9117/api/v2.0/indexers/seedpool-api/results/torznab/api?apikey=f30nr726gk531e1xa06u1sla0jr4709p&t=search&cat=&q="
+            ],
+            torrentClients: [
+                "qbittorrent:http://admin:changeme@autotorrenting-qbit:8080",
+            ],
+            useClientTorrents: true,
+            excludeOlder: "2 weeks",
+            excludeRecentSearch: "3 days",
+            searchLimit: 150,
+            searchCadence: "1d",
+          };
+
+  persistence:
+    config:
+      enabled: true
+      mountPath: /config
+      readOnly: false
+      size: 1Gi
+
+    crossseed-config-file:
+      enabled: true
+      type: configmap
+      objectName: crossseed-config
+      mountPath: /config/config.js
+      subPath: config.js
+      readOnly: true
+      items:
+        - key: config.js
+          path: config.js
+
+    media:
+      enabled: true
+      mountPath: /mnt/media_and_torrents
+      type: pvc
+      existingClaim: torrent-pvc

@@ -24,3 +24,6 @@ dependencies:
   version: 0.4.1
   repository: https://charts.gabe565.com
   alias: qbit
+- name: cross-seed
+  repository: https://charts.alekc.dev
+  version: 6.18.2
