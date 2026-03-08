@@ -376,6 +376,7 @@ cross-seed:
             torznab: [
                 "http://autotorrenting-jackett:9117/api/v2.0/indexers/torrentleech/results/torznab/api?apikey=f30nr726gk531e1xa06u1sla0jr4709p&t=search&cat=&q=",
                 "http://autotorrenting-jackett:9117/api/v2.0/indexers/seedpool-api/results/torznab/api?apikey=f30nr726gk531e1xa06u1sla0jr4709p&t=search&cat=&q="
+                "http://autotorrenting-jackett:9117/api/v2.0/indexers/digitalcore-api/results/torznab/api?apikey=f30nr726gk531e1xa06u1sla0jr4709p&t=search&cat=&q="
             ],
             torrentClients: [
                 "qbittorrent:http://admin:changeme@autotorrenting-qbit:8080",
