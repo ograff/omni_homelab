@@ -1,7 +1,7 @@
 teslamate:
   image:
     repository: teslamate/teslamate
-    tag: "3.0.0"
+    tag: &teslamateTag "3.0.0"
   timeZone: America/Los_Angeles
 
   virtualHost: teslamate.2411.house
@@ -34,3 +34,27 @@ teslamate:
   env:
     DATABASE_USER: "$(username)"
     DATABASE_PASS: "$(password)"
+
+  grafana:
+    grafana.ini:
+      auth.anonymous:
+        enabled: true
+        org_role: Viewer
+      auth:
+        disable_login_form: true
+    image:
+      repository: teslamate/grafana
+      tag: *teslamateTag
+    ingress:
+      enabled: true
+      ingressClassName: nginx
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt-prod
+        external-dns.alpha.kubernetes.io/target: "tunnel.2411.house"
+        external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
+      hosts:
+        - &grafanaHost teslagraph.2411.house
+      tls:
+        - secretName: teslagraph-tls-secret
+          hosts:
+            - *grafanaHost
