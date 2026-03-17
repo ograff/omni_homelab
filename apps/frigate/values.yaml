@@ -9,6 +9,20 @@ frigate:
   envFromSecrets:
     - frigate-mqtt-credentials
 
+  coral:
+    enabled: true
+    hostPath: /dev/bus/usb
+
+  extraVolumes:
+    - name: dev-dri
+      hostPath:
+        path: /dev/dri
+        type: Directory
+
+  extraVolumeMounts:
+    - name: dev-dri
+      mountPath: /dev/dri
+
   shmSize: 1Gi
   tmpfs:
     enabled: true
@@ -55,8 +69,12 @@ frigate:
       password: "{FRIGATE_MQTT_PASSWORD}"
 
     detectors:
-      cpu1:
-        type: cpu
+      coral:
+        type: edgetpu
+        device: usb
+
+    ffmpeg:
+      hwaccel_args: preset-vaapi
 
     record:
       enabled: true
