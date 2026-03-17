@@ -94,10 +94,8 @@ frigate:
     go2rtc:
       streams:
         back_yard:
-          - "ffmpeg:http://192.168.45.73/flv?port=1935&app=bcs&stream=channel0_main.bcs&user=Frigate&password=frigate1#video=copy#audio=copy#audio=opus"
-          - "rtsp://Frigate:frigate1@192.168.45.73/Preview_01_sub"
+          - "rtsp://Frigate:frigate1@192.168.45.73/Preview_01_main"
         back_yard_sub:
-          - "ffmpeg:http://192.168.45.73/flv?port=1935&app=bcs&stream=channel0_ext.bcs&user=Frigate&password=frigate1#video=copy#audio=copy#audio=opus"
           - "rtsp://Frigate:frigate1@192.168.45.73/Preview_01_sub"
     cameras:
       back_yard:
