@@ -45,7 +45,7 @@ teslamate:
       datasources.yaml:
         apiVersion: 1
         datasources:
-          - name: TeslaMate
+          - name: TeslaMate2
             type: postgres
             url: teslamate-pg-ro:5432
             database: teslamate
