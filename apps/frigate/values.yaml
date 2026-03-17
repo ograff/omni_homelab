@@ -1,0 +1,96 @@
+frigate:
+  image:
+    pullPolicy: IfNotPresent
+
+  env:
+    TZ: America/Los_Angeles
+
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    annotations:
+      external-dns.alpha.kubernetes.io/target: "tunnel.2411.house"
+      external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
+    hosts:
+      - host: frigate.2411.house
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: []
+
+  persistence:
+    config:
+      enabled: true
+      storageClass: ""
+      accessMode: ReadWriteOnce
+      size: 1Gi
+      # Allow frigate to write config (enables UI edits and migrations)
+      ephemeralWritableConfigYaml: true
+    media:
+      enabled: true
+      storageClass: ""
+      accessMode: ReadWriteOnce
+      size: 100Gi
+
+  # Uncomment to target a specific node (e.g. one with camera/USB coral access)
+  # nodeSelector:
+  #   kubernetes.io/hostname: nas-worker
+
+  config: |
+    mqtt:
+      enabled: true
+      host: home-emqx-enterprise.home.svc.cluster.local
+      port: 1883
+      # user: frigate
+      # password: "{FRIGATE_MQTT_PASSWORD}"
+      topic_prefix: frigate
+      client_id: frigate
+
+    detectors:
+      cpu1:
+        type: cpu
+        num_threads: 3
+    # Uncomment and configure for Coral USB/PCIe accelerator:
+    # detectors:
+    #   coral:
+    #     type: edgetpu
+    #     device: usb
+
+    # Record settings
+    record:
+      enabled: true
+      retain:
+        days: 7
+        mode: motion
+
+    # Snapshot settings
+    snapshots:
+      enabled: true
+      retain:
+        default: 14
+
+    # Example camera - replace with your actual cameras
+    cameras:
+      # front_door:
+      #   ffmpeg:
+      #     inputs:
+      #       - path: rtsp://user:pass@192.168.1.100:554/stream1
+      #         roles:
+      #           - detect
+      #           - record
+      #   detect:
+      #     width: 1920
+      #     height: 1080
+      #     fps: 5
+      #
+      # back_yard:
+      #   ffmpeg:
+      #     inputs:
+      #       - path: rtsp://user:pass@192.168.1.101:554/stream1
+      #         roles:
+      #           - detect
+      #           - record
+      #   detect:
+      #     width: 1920
+      #     height: 1080
+      #     fps: 5
