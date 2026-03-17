@@ -44,12 +44,8 @@ teslamate:
     datasources:
       datasources.yaml:
         apiVersion: 1
-        deleteDatasources:
-          - name: TeslaMate
-            orgId: 1
         datasources:
           - name: TeslaMate
-            isDefault: true
             type: postgres
             url: teslamate-pg-ro:5432
             database: teslamate
@@ -59,6 +55,9 @@ teslamate:
             jsonData:
               sslmode: disable
               postgresVersion: 1800
+    persistence:
+      enabled: true
+      size: 4Gi
     image:
       repository: teslamate/grafana
       tag: *teslamateTag
