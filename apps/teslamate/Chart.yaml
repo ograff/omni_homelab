@@ -1,3 +1,7 @@
 apiVersion: v2
 name: teslamate
 version: 0.0.0
+dependencies:
+  - name: teslamate
+    version: 0.5.0
+    repository: https://dkoshkin.github.io/teslamate-helm-chart

@@ -1,0 +1,28 @@
+teslamate:
+  timeZone: America/Los_Angeles
+
+  virtualHost: teslamate.2411.house
+
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+      external-dns.alpha.kubernetes.io/target: "tunnel.2411.house"
+      external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
+    hosts:
+      - &host teslamate.2411.house
+    tls:
+      - secretName: teslamate-tls-secret
+        hosts:
+          - *host
+
+  # Use external CNPG PostgreSQL cluster
+  remotePostgresql:
+    enabled: true
+    host: teslamate-pg-rw
+    database: teslamate
+
+  # Load DATABASE_USER and DATABASE_PASS from mapped CNPG secret
+  envFromSecrets:
+    - name: teslamate-db-credentials
