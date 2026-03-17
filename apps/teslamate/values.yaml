@@ -28,4 +28,4 @@ teslamate:
 
   # Load DATABASE_USER and DATABASE_PASS from mapped CNPG secret
   envFromSecrets:
-    - name: teslamate-pg-app
+    - name: teslamate-db-credentials
