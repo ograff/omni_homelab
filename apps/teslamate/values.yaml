@@ -29,6 +29,7 @@ teslamate:
   # Load CNPG secret and alias keys to what TeslaMate expects
   envFromSecrets:
     - name: teslamate-pg-app
+    - name: teslamate-encryption-key
 
   env:
     DATABASE_USER: "$(username)"
