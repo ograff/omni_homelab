@@ -113,6 +113,9 @@ frigate:
               input_args: preset-rtsp-restream
               roles:
                 - detect
+      front_yard:
+        ffmpeg:
+          inputs:
             - path: rtsp://127.0.0.1:8554/front_yard
               input_args: preset-rtsp-restream
               roles:
