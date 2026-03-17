@@ -74,17 +74,17 @@ frigate:
       coral:
         type: edgetpu
         device: usb
+    detect:
+      enable: True
+      fps: 5
 
     ffmpeg:
       hwaccel_args: preset-vaapi
 
     record:
-      enabled: true
-      retain:
+      enabled: True
+      continuous:
         days: 7
-      events:
-        retain:
-          default: 14
 
     snapshots:
       enabled: true
