@@ -61,6 +61,7 @@ frigate:
 
   config: |
     mqtt:
+      enabled: true
       host: home-emqx-enterprise-headless.home.svc.cluster.local
       port: 1883
       topic_prefix: frigate
@@ -89,15 +90,23 @@ frigate:
       retain:
         default: 14
 
-    # cameras:
-    #   front_door:
-    #     ffmpeg:
-    #       inputs:
-    #         - path: rtsp://user:pass@192.168.x.x:554/stream
-    #           roles:
-    #             - detect
-    #             - record
-    #     detect:
-    #       width: 1920
-    #       height: 1080
-    #       fps: 5
+    go2rtc:
+      streams:
+        back_yard:
+          - "ffmpeg:http://192.168.45.73/flv?port=1935&app=bcs&stream=channel0_main.bcs&user=Frigate&password=frigate1#video=copy#audio=copy#audio=opus"
+          - "rtsp://Frigate:frigate1@192.168.45.73/Preview_01_sub"
+        back_yard_sub:
+          - "ffmpeg:http://192.168.45.73/flv?port=1935&app=bcs&stream=channel0_ext.bcs&user=Frigate&password=frigate1#video=copy#audio=copy#audio=opus"
+          - "rtsp://Frigate:frigate1@192.168.45.73/Preview_01_sub"
+    cameras:
+      back_yard:
+        ffmpeg:
+          inputs:
+            - path: rtsp://127.0.0.1:8554/back_yard
+              input_args: preset-rtsp-restream
+              roles:
+                - record
+            - path: rtsp://127.0.0.1:8554/back_yard_sub
+              input_args: preset-rtsp-restream
+              roles:
+                - detect
