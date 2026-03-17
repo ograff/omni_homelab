@@ -75,7 +75,7 @@ frigate:
         type: edgetpu
         device: usb
     detect:
-      enable: True
+      enabled: True
       fps: 5
 
     ffmpeg:
