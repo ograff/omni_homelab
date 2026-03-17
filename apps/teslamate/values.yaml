@@ -40,6 +40,22 @@ teslamate:
       GF_AUTH_ANONYMOUS_ENABLED: "true"
       GF_AUTH_ANONYMOUS_ORG_ROLE: Admin
       GF_AUTH_DISABLE_LOGIN_FORM: "true"
+    envFromSecret: teslamate-pg-app
+    datasources:
+      datasources.yaml:
+        apiVersion: 1
+        datasources:
+          - name: TeslaMate
+            type: postgres
+            url: teslamate-pg-ro:5432
+            database: teslamate
+            user: $__env{username}
+            secureJsonData:
+              password: $__env{password}
+            jsonData:
+              sslmode: disable
+              postgresVersion: 1800
+            isDefault: true
     image:
       repository: teslamate/grafana
       tag: *teslamateTag
