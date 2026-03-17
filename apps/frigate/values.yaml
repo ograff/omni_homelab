@@ -97,6 +97,10 @@ frigate:
           - "rtsp://Frigate:frigate1@192.168.45.73/Preview_01_main"
         back_yard_sub:
           - "rtsp://Frigate:frigate1@192.168.45.73/Preview_01_sub"
+        front_yard:
+          - "rtsp://Frigate:frigate1@192.168.45.83/Preview_01_main"
+        front_yard_sub:
+          - "rtsp://Frigate:frigate1@192.168.45.83/Preview_01_sub"
     cameras:
       back_yard:
         ffmpeg:
@@ -106,6 +110,14 @@ frigate:
               roles:
                 - record
             - path: rtsp://127.0.0.1:8554/back_yard_sub
+              input_args: preset-rtsp-restream
+              roles:
+                - detect
+            - path: rtsp://127.0.0.1:8554/front_yard
+              input_args: preset-rtsp-restream
+              roles:
+                - record
+            - path: rtsp://127.0.0.1:8554/front_yard_sub
               input_args: preset-rtsp-restream
               roles:
                 - detect
