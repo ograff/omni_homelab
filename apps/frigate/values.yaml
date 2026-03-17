@@ -1,0 +1,85 @@
+frigate:
+  image:
+    repository: ghcr.io/blakeblackshear/frigate
+    pullPolicy: IfNotPresent
+
+  env:
+    TZ: America/Los_Angeles
+
+  envFromSecrets:
+    - frigate-mqtt-credentials
+
+  shmSize: 1Gi
+  tmpfs:
+    enabled: true
+    sizeLimit: 1Gi
+
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    annotations:
+      external-dns.alpha.kubernetes.io/target: "tunnel.2411.house"
+      external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+      hajimari.io/appName: Frigate
+      nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+      nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    hosts:
+      - host: &frigate_host frigate.2411.house
+        paths:
+          - path: /
+            portName: http
+    tls:
+      - secretName: frigate-tls-certificate
+        hosts:
+          - *frigate_host
+
+  persistence:
+    config:
+      enabled: true
+      size: 4Gi
+    media:
+      enabled: true
+      existingClaim: frigate-media
+
+  nodeSelector:
+    kubernetes.io/hostname: nas-worker
+
+  config: |
+    mqtt:
+      host: home-emqx-enterprise-headless.home.svc.cluster.local
+      port: 1883
+      topic_prefix: frigate
+      client_id: frigate
+      user: "{FRIGATE_MQTT_USER}"
+      password: "{FRIGATE_MQTT_PASSWORD}"
+
+    detectors:
+      cpu1:
+        type: cpu
+
+    record:
+      enabled: true
+      retain:
+        days: 7
+      events:
+        retain:
+          default: 14
+
+    snapshots:
+      enabled: true
+      retain:
+        default: 14
+
+    # cameras:
+    #   front_door:
+    #     ffmpeg:
+    #       inputs:
+    #         - path: rtsp://user:pass@192.168.x.x:554/stream
+    #           roles:
+    #             - detect
+    #             - record
+    #     detect:
+    #       width: 1920
+    #       height: 1080
+    #       fps: 5
