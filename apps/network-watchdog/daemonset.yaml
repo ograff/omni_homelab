@@ -59,10 +59,11 @@ spec:
               if [ ${failure_count} -ge ${FAILURE_THRESHOLD} ]; then
                 echo "$(date): CRITICAL - ${FAILURE_THRESHOLD} consecutive failures detected. Restarting ${INTERFACE}..."
 
-                # Bring interface down and up
-                ip link set ${INTERFACE} down
-                sleep 2
-                ip link set ${INTERFACE} up
+                echo WOULD RESET
+                ## Bring interface down and up
+                #ip link set ${INTERFACE} down
+                #sleep 2
+                #ip link set ${INTERFACE} up
 
                 echo "$(date): Interface ${INTERFACE} restarted. Waiting 10s for initialization..."
                 sleep 10
