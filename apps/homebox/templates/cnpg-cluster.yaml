@@ -6,6 +6,12 @@ metadata:
 spec:
   imageName: ghcr.io/cloudnative-pg/postgresql:16.8
   instances: 3
+  affinity:
+    enablePodAntiAffinity: true #default value
+    topologyKey: kubernetes.io/hostname #defaul value
+    podAntiAffinityType: preferred #default value
+    nodeSelector:
+      storage: "true"
 
   storage:
     size: 8Gi
