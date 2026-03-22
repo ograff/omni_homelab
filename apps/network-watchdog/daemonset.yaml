@@ -1,0 +1,89 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: network-watchdog
+  namespace: network-watchdog
+  labels:
+    app: network-watchdog
+spec:
+  selector:
+    matchLabels:
+      app: network-watchdog
+  template:
+    metadata:
+      labels:
+        app: network-watchdog
+    spec:
+      serviceAccountName: network-watchdog
+      hostNetwork: true
+      nodeSelector:
+        node.kubernetes.io/instance-type: pi5
+      tolerations:
+      - effect: NoSchedule
+        operator: Exists
+      containers:
+      - name: watchdog
+        image: alpine:3.19
+        command:
+        - /bin/sh
+        - -c
+        - |
+          #!/bin/sh
+          set -e
+
+          # Install required packages
+          apk add --no-cache iputils iproute2
+
+          # Configuration
+          INTERFACE="end0"
+          GATEWAY=$(ip route | grep default | awk '{print $3}' | head -n1)
+          PING_INTERVAL=5
+          FAILURE_THRESHOLD=3  # 3 failures * 5 seconds = 15 seconds
+
+          echo "Starting network watchdog for interface ${INTERFACE}"
+          echo "Gateway: ${GATEWAY}"
+          echo "Ping interval: ${PING_INTERVAL}s, Failure threshold: ${FAILURE_THRESHOLD} attempts"
+
+          failure_count=0
+
+          while true; do
+            if ping -c 1 -W 2 -I ${INTERFACE} ${GATEWAY} > /dev/null 2>&1; then
+              if [ ${failure_count} -gt 0 ]; then
+                echo "$(date): Ping successful, resetting failure count from ${failure_count}"
+              fi
+              failure_count=0
+            else
+              failure_count=$((failure_count + 1))
+              echo "$(date): Ping failed (attempt ${failure_count}/${FAILURE_THRESHOLD})"
+
+              if [ ${failure_count} -ge ${FAILURE_THRESHOLD} ]; then
+                echo "$(date): CRITICAL - ${FAILURE_THRESHOLD} consecutive failures detected. Restarting ${INTERFACE}..."
+
+                # Bring interface down and up
+                ip link set ${INTERFACE} down
+                sleep 2
+                ip link set ${INTERFACE} up
+
+                echo "$(date): Interface ${INTERFACE} restarted. Waiting 10s for initialization..."
+                sleep 10
+
+                # Reset counter
+                failure_count=0
+              fi
+            fi
+
+            sleep ${PING_INTERVAL}
+          done
+        securityContext:
+          privileged: true
+          capabilities:
+            add:
+            - NET_ADMIN
+            - NET_RAW
+        resources:
+          requests:
+            memory: "32Mi"
+            cpu: "10m"
+          limits:
+            memory: "64Mi"
+            cpu: "50m"

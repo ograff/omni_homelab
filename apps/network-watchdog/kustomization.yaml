@@ -1,0 +1,15 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: network-watchdog
+
+resources:
+- namespace.yaml
+- rbac.yaml
+- daemonset.yaml
+
+labels:
+- includeSelectors: true
+  pairs:
+    app.kubernetes.io/name: network-watchdog
+    app.kubernetes.io/component: monitoring
