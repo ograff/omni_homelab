@@ -1,0 +1,35 @@
+open-webui:
+  replicaCount: 1
+
+  openaiBaseApiUrl: "http://omniroute-main.omniroute.svc.cluster.local:20128/v1"
+
+  extraEnvVars:
+    - name: WEBUI_AUTH
+      value: "False"
+
+  ollama:
+    enabled: false
+
+  pipelines:
+    enabled: false
+
+  tika:
+    enabled: false
+
+  websocket:
+    enabled: false
+
+  ingress:
+    enabled: true
+    class: nginx
+    annotations:
+      external-dns.alpha.kubernetes.io/target: "tunnel.2411.house"
+      external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
+    host: chat.2411.house
+
+  persistence:
+    enabled: true
+    size: 4Gi
+    accessModes:
+      - ReadWriteOnce
+    storageClass: longhorn
