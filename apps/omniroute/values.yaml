@@ -1,0 +1,47 @@
+app-template:
+  controllers:
+    main:
+      strategy: Recreate
+      containers:
+        main:
+          image:
+            repository: diegosouzapw/omniroute
+            tag: latest
+            pullPolicy: Always
+          env:
+            TZ: America/Los_Angeles
+  service:
+    main:
+      controller: main
+      ports:
+        http:
+          port: 20128
+    tailscale:
+      controller: main
+      type: LoadBalancer
+      loadBalancerClass: tailscale
+      ports:
+        http:
+          port: 20128
+  ingress:
+    main:
+      className: nginx
+      annotations:
+        external-dns.alpha.kubernetes.io/target: "tunnel.2411.house"
+        external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
+      hosts:
+        - host: omniroute.2411.house
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                identifier: main
+                port: http
+  persistence:
+    data:
+      enabled: true
+      type: persistentVolumeClaim
+      accessMode: ReadWriteOnce
+      size: 4Gi
+      globalMounts:
+        - path: /app/data
