@@ -52,6 +52,7 @@ homebox:
         secretName: homebox-tls-secret
 
   persistence:
+    storageClassName: longhorn
     capacity: 5Gi
     accessModes:
       - ReadWriteOnce
