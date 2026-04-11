@@ -12,7 +12,7 @@ app-template:
             - /bin/sh
             - -c
             - |
-              npm install -g @anthropic-ai/claude-code && \
+              npm install -g @anthropic-ai/claude-code @google/gemini-cli && \
               exec node run-standalone.mjs
           env:
             TZ: America/Los_Angeles
