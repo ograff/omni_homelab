@@ -17,9 +17,6 @@ openclaw:
         controller: main
         type: LoadBalancer
         loadBalancerClass: tailscale
-        ports:
-          gateway:
-            port: 18789
 
     ingress:
       main:
