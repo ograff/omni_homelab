@@ -34,6 +34,11 @@ openclaw:
                   identifier: main
                   port: http
 
+    configMaps:
+      config:
+        data:
+          openclaw.json: "{}"
+
     persistence:
       data:
         enabled: true
