@@ -41,6 +41,23 @@ openclaw:
                 identifier: main
                 port: gateway
 
+  configMaps:
+    config:
+      data:
+        openclaw.json: |
+          {
+            "gateway": {
+              "port": 18789,
+              "mode": "local",
+              "trustedProxies": ["10.0.0.1"],
+              "controlUi": {
+                "allowedOrigins": [
+                  "https://openclaw.2411.house"
+                ]
+              }
+            }
+          }
+
   persistence:
     data:
       enabled: true
