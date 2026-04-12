@@ -50,6 +50,7 @@ openclaw:
               "port": 18789,
               "mode": "local",
               "controlUi": {
+                "dangerouslyAllowHostHeaderOriginFallback": true
               }
             }
           }
