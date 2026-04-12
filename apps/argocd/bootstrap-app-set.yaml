@@ -73,4 +73,9 @@ spec:
           namespace: argocd
           jsonPointers:
             - /spec
+        # OpenClaw runtime config merges persist to the ConfigMap
+        - kind: ConfigMap
+          namespace: openclaw
+          jsonPointers:
+            - /data
 

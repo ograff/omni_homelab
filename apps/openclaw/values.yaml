@@ -1,0 +1,49 @@
+openclaw:
+  configMode: merge
+
+  controllers:
+    main:
+      containers:
+        main:
+          env:
+            TZ: America/Los_Angeles
+          envFrom:
+            - secretRef:
+                name: openclaw-env-secret
+
+  service:
+    main:
+      controller: main
+      ports:
+        gateway:
+          port: 18789
+    tailscale:
+      controller: main
+      type: LoadBalancer
+      loadBalancerClass: tailscale
+      ports:
+        gateway:
+          port: 18789
+
+  ingress:
+    main:
+      enabled: true
+      className: nginx
+      annotations:
+        external-dns.alpha.kubernetes.io/target: "tunnel.2411.house"
+        external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
+      hosts:
+        - host: openclaw.2411.house
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                identifier: main
+                port: gateway
+
+  persistence:
+    data:
+      enabled: true
+      type: persistentVolumeClaim
+      accessMode: ReadWriteOnce
+      size: 5Gi
