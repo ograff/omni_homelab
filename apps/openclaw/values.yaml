@@ -32,7 +32,7 @@ openclaw:
                 pathType: Prefix
                 service:
                   identifier: main
-                  port: gateway
+                  port: http
 
     persistence:
       data:
