@@ -1,58 +1,45 @@
 openclaw:
-  configMode: merge
+  app-template:
+    configMode: merge
 
-  controllers:
-    main:
-      containers:
-        main:
-          env:
-            TZ: America/Los_Angeles
-          envFrom:
-            - secretRef:
-                name: openclaw-env-secret
+    controllers:
+      main:
+        containers:
+          main:
+            env:
+              TZ: America/Los_Angeles
+            envFrom:
+              - secretRef:
+                  name: openclaw-env-secret
 
-  service:
-    main:
-      controller: main
-      type: LoadBalancer
-      loadBalancerClass: tailscale
-      ports:
-        gateway:
-          port: 18789
+    service:
+      main:
+        controller: main
+        type: LoadBalancer
+        loadBalancerClass: tailscale
+        ports:
+          gateway:
+            port: 18789
 
-  ingress:
-    main:
-      enabled: true
-      className: nginx
-      annotations:
-        external-dns.alpha.kubernetes.io/target: "tunnel.2411.house"
-        external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
-      hosts:
-        - host: openclaw.2411.house
-          paths:
-            - path: /
-              pathType: Prefix
-              service:
-                identifier: main
-                port: gateway
+    ingress:
+      main:
+        enabled: true
+        className: nginx
+        annotations:
+          external-dns.alpha.kubernetes.io/target: "tunnel.2411.house"
+          external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
+        hosts:
+          - host: openclaw.2411.house
+            paths:
+              - path: /
+                pathType: Prefix
+                service:
+                  identifier: main
+                  port: gateway
 
-  configMaps:
-    config:
+    persistence:
       data:
-        openclaw.json: |
-          {
-            "gateway": {
-              "port": 18789,
-              "mode": "local",
-              "controlUi": {
-                "dangerouslyAllowHostHeaderOriginFallback": true
-              }
-            }
-          }
-
-  persistence:
-    data:
-      enabled: true
-      type: persistentVolumeClaim
-      accessMode: ReadWriteOnce
-      size: 5Gi
+        enabled: true
+        type: persistentVolumeClaim
+        accessMode: ReadWriteOnce
+        size: 5Gi
