@@ -35,7 +35,7 @@ app-template:
             # Security and ops
             MACHINE_ID_SALT: endpoint-proxy-salt
             AUTH_COOKIE_SECURE: "false"
-            REQUIRE_API_KEY: "false"
+            REQUIRE_API_KEY: "true"
             ALLOW_API_KEY_REVEAL: "false"
             PROVIDER_LIMITS_SYNC_INTERVAL_MINUTES: "70"
 
