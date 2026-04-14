@@ -2070,7 +2070,7 @@ cluster:
               automountServiceAccountToken: true
               containers:
               - name: frontend
-                image: "quay.io/cilium/hubble-ui:v0.13.2@sha256:9e37c1296b802830834cc87342a9182ccbb71ffebb711971e849221bd9d59392"
+                image: "quay.io/cilium/hubble-ui:v0.13.5@sha256:f7d514fc54d784ed6df9d58cf0e97648b143f92b766dd1780ed3fc845bd4c516"
                 imagePullPolicy: IfNotPresent
                 ports:
                 - name: http
