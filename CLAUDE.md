@@ -37,6 +37,13 @@ There are no build scripts, Makefiles, or CI pipelines in this repo. All changes
 
 **Cluster infrastructure changes:** Edit `infra/cluster-template.yaml` or files under `infra/patches/`. These require Talos apply (not ArgoCD).
 
+## Common App Patterns
+
+- **bjw-s app-template** (`https://bjw-s-labs.github.io/helm-charts`) is the go-to wrapper for deploying arbitrary container images (e.g. `omniroute`, `openclaw`, `browserless`). Structure: `controllers.main.containers.main` for the pod spec, `service.<name>` for services, `ingress.<name>` for ingress, `persistence.<name>` for PVCs.
+- **Tailscale-exposed services:** use `type: LoadBalancer` + `loadBalancerClass: tailscale` (tailscale operator is installed and watches for this class). Used for internal-only services that shouldn't go through the Cloudflare tunnel.
+- **Secrets are expected to exist out-of-band** in the app's namespace — values files reference them by name (e.g. `envFrom.secretRef`, `secretKeyRef`) but the secret itself is created manually (`kubectl create secret ...`). There is no SealedSecrets or ExternalSecrets controller in this repo.
+- **Chart.lock + `charts/` dirs are committed.** After bumping a chart version in `Chart.yaml`, run `helm dependency update` in that app's directory so ArgoCD sees the new vendored chart.
+
 ## Renovate Dependency Management
 
 `renovate.json` tracks: Helm chart versions, Helm values image tags, Kustomize remote git refs, inline container images, Docker mods, and GitHub release URLs. Patch-level Helm updates auto-merge. Docker images using `latest` tag are pinned to digest.

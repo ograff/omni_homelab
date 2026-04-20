@@ -1,0 +1,25 @@
+app-template:
+  controllers:
+    main:
+      containers:
+        main:
+          image:
+            repository: ghcr.io/browserless/chromium
+            tag: latest
+            pullPolicy: Always
+          env:
+            TZ: America/Los_Angeles
+            CONCURRENT: "10"
+            TOKEN:
+              valueFrom:
+                secretKeyRef:
+                  name: browserless-token
+                  key: token
+  service:
+    main:
+      controller: main
+      type: LoadBalancer
+      loadBalancerClass: tailscale
+      ports:
+        http:
+          port: 3000
