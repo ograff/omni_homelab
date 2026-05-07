@@ -26,4 +26,4 @@ dependencies:
   alias: qbit
 - name: cross-seed
   repository: https://charts.alekc.dev
-  version: 6.18.3
+  version: 7.3.0
