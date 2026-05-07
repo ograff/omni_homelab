@@ -4,4 +4,4 @@ version: 0.0.0
 dependencies:
   - name: openclaw
     repository: https://serhanekicii.github.io/openclaw-helm
-    version: 1.5.16
+    version: 1.5.34
