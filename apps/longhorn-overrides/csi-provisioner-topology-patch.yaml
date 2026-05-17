@@ -1,0 +1,64 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: csi-provisioner-patcher
+  namespace: longhorn
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: csi-provisioner-patcher
+  namespace: longhorn
+rules:
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    resourceNames: ["csi-provisioner"]
+    verbs: ["get", "patch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: csi-provisioner-patcher
+  namespace: longhorn
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: csi-provisioner-patcher
+subjects:
+  - kind: ServiceAccount
+    name: csi-provisioner-patcher
+    namespace: longhorn
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  generateName: csi-provisioner-topology-patch-
+  namespace: longhorn
+  annotations:
+    argocd.argoproj.io/hook: Sync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+spec:
+  backoffLimit: 5
+  ttlSecondsAfterFinished: 3600
+  template:
+    spec:
+      serviceAccountName: csi-provisioner-patcher
+      restartPolicy: OnFailure
+      containers:
+        - name: kubectl
+          image: bitnami/kubectl:1.33
+          command:
+            - sh
+            - -c
+            - |
+              set -eu
+              current=$(kubectl -n longhorn get deployment csi-provisioner \
+                -o jsonpath='{.spec.template.spec.containers[0].args}')
+              if echo "$current" | grep -q 'feature-gates=Topology=true'; then
+                echo "Topology feature gate already enabled, nothing to do"
+                exit 0
+              fi
+              echo "Patching csi-provisioner to enable Topology feature gate"
+              kubectl -n longhorn patch deployment csi-provisioner \
+                --type=json \
+                -p='[{"op":"add","path":"/spec/template/spec/containers/0/args/-","value":"--feature-gates=Topology=true"}]'
