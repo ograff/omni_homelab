@@ -15,6 +15,10 @@ spec:
       - key: node-role.kubernetes.io/control-plane
         operator: Exists
         effect: NoSchedule
+      - key: storage
+        operator: Equal
+        value: "false"
+        effect: NoSchedule
       containers:
       - name: iperf3
         image: networkstatic/iperf3
