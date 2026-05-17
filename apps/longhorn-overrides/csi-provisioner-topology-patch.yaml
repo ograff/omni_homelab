@@ -45,7 +45,7 @@ spec:
       restartPolicy: OnFailure
       containers:
         - name: kubectl
-          image: registry.k8s.io/kubectl:v1.33.1
+          image: alpine/kubectl:1.33.4
           command:
             - sh
             - -c
