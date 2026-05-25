@@ -6,3 +6,6 @@ gha-runner-scale-set:
   maxRunners: 5
   containerMode:
     type: kubernetes-novolume
+  controllerServiceAccount:
+    namespace: arc-controller
+    name: arc-controller-gha-rs-controller
