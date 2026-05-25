@@ -1,5 +1,5 @@
 gha-runner-scale-set:
-  githubConfigUrl: https://github.com/ograff
+  githubConfigUrl: https://github.com/ograff/new_dotfiles
   githubConfigSecret: arc-runners-github
   runnerScaleSetName: homelab
   minRunners: 0
