@@ -1,0 +1,26 @@
+local-path-provisioner:
+  fullnameOverride: local-path-provisioner
+
+  storageClass:
+    create: true
+    name: local-path
+    defaultClass: false
+    defaultVolumeType: hostPath
+    reclaimPolicy: Delete
+    volumeBindingMode: WaitForFirstConsumer
+
+  nodePathMap:
+    - node: DEFAULT_PATH_FOR_NON_LISTED_NODES
+      paths: []
+    - node: pi5-1
+      paths:
+        - /var/mnt/longhorn-data/local-path
+    - node: pi5-2
+      paths:
+        - /var/mnt/longhorn-data/local-path
+    - node: nas-worker
+      paths:
+        - /var/mnt/longhorn-data-0/local-path
+
+  nodeSelector:
+    storage: "true"
