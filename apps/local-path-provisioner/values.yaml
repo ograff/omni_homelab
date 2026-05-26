@@ -11,16 +11,12 @@ local-path-provisioner:
 
   nodePathMap:
     - node: DEFAULT_PATH_FOR_NON_LISTED_NODES
-      paths: []
-    - node: pi5-1
-      paths:
-        - /var/mnt/longhorn-data/local-path
-    - node: pi5-2
       paths:
         - /var/mnt/longhorn-data/local-path
     - node: nas-worker
       paths:
         - /var/mnt/longhorn-data-0/local-path
+        - /var/mnt/longhorn-data-1/local-path
 
   nodeSelector:
     storage: "true"
