@@ -15,7 +15,7 @@ spec:
 
   storage:
     size: 8Gi
-    storageClass: local-single
+    storageClass: local-path
 
   bootstrap:
     initdb:
