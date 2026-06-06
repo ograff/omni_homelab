@@ -1,0 +1,33 @@
+tailscale-exporter:
+  # Credentials live in a Secret named `tailscale-exporter` that you create
+  # out-of-band in this namespace (see the README at the root of this app dir):
+  #   kubectl -n tailscale-exporter create secret generic tailscale-exporter \
+  #     --from-literal=TAILSCALE_OAUTH_CLIENT_ID=... \
+  #     --from-literal=TAILSCALE_OAUTH_CLIENT_SECRET=... \
+  #     --from-literal=TAILSCALE_TAILNET=...
+  env:
+    - name: TAILSCALE_OAUTH_CLIENT_ID
+      valueFrom:
+        secretKeyRef:
+          name: tailscale-exporter
+          key: TAILSCALE_OAUTH_CLIENT_ID
+    - name: TAILSCALE_OAUTH_CLIENT_SECRET
+      valueFrom:
+        secretKeyRef:
+          name: tailscale-exporter
+          key: TAILSCALE_OAUTH_CLIENT_SECRET
+    - name: TAILSCALE_TAILNET
+      valueFrom:
+        secretKeyRef:
+          name: tailscale-exporter
+          key: TAILSCALE_TAILNET
+
+  serviceMonitor:
+    enabled: true
+    scrapeInterval: 30s
+    # The machine-level dashboards/alerts key off a `tailscale_machine` label.
+    # See https://github.com/adinhodovic/tailscale-exporter#client-side-machine-metrics
+    relabelings:
+      - action: replace
+        replacement: homelab
+        targetLabel: tailscale_machine

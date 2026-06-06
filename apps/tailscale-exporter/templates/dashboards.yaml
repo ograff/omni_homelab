@@ -1,0 +1,23 @@
+{{- /*
+  The Grafana app (apps/grafana) runs the dashboard sidecar with
+  searchNamespace: ALL, so any ConfigMap labelled `grafana_dashboard`
+  is auto-imported. Dashboards are vendored from the tailscale-mixin:
+  https://github.com/adinhodovic/tailscale-exporter/tree/main/tailscale-mixin/dashboards_out
+*/}}
+{{- range $path, $_ := .Files.Glob "dashboards/*.json" }}
+{{- $name := base $path | trimSuffix ".json" }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tailscale-exporter-dashboard-{{ $name }}
+  labels:
+    grafana_dashboard: "1"
+    app.kubernetes.io/name: tailscale-exporter
+  annotations:
+    # Drop the dashboard into a dedicated Grafana folder.
+    grafana_folder: "Tailscale"
+data:
+  {{ base $path }}: |-
+{{ $.Files.Get $path | indent 4 }}
+{{- end }}

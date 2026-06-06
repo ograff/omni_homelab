@@ -1,0 +1,7 @@
+apiVersion: v2
+name: tailscale-exporter
+version: 0.0.0
+dependencies:
+  - name: tailscale-exporter
+    repository: https://adinhodovic.github.io/tailscale-exporter
+    version: 0.5.0
