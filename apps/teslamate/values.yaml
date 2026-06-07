@@ -1,7 +1,7 @@
 teslamate:
   image:
     repository: teslamate/teslamate
-    tag: &teslamateTag "3.0.0"
+    tag: &teslamateTag "3.1.0"
   timeZone: America/Los_Angeles
 
   virtualHost: teslamate.2411.house
