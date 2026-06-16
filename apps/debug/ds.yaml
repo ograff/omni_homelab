@@ -40,7 +40,7 @@ spec:
       
       containers:
       - name: alpine
-        image: alpine:3.23.3
+        image: alpine:3.24.1
         # Keep the container running
         command: ["/bin/sh"]
         args: ["-c", "while true; do echo 'Alpine container running on node:' ${NODE_NAME}; sleep 300; done"]
