@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: teslamateagile
+  namespace: teslamate
+  labels:
+    app: teslamateagile
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: teslamateagile
+  template:
+    metadata:
+      labels:
+        app: teslamateagile
+    spec:
+      containers:
+        - name: teslamateagile
+          image: ghcr.io/amyjeanes/teslamateagile:latest
+          env:
+            # Database connection (shared TeslaMate CNPG cluster)
+            - name: DATABASE_HOST
+              value: teslamate-pg-rw
+            - name: DATABASE_PORT
+              value: "5432"
+            - name: DATABASE_NAME
+              value: teslamate
+            # Credentials from the CNPG-generated app secret
+            - name: DATABASE_USER
+              valueFrom:
+                secretKeyRef:
+                  name: teslamate-pg-app
+                  key: username
+            - name: DATABASE_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: teslamate-pg-app
+                  key: password
+            # Re-price charges at the home geofence only
+            - name: TeslaMate__GeofenceId
+              value: "43"
+            - name: TeslaMate__UpdateIntervalSeconds
+              value: "300"
+            # HA only retains ~10 days of history by default; keep lookback under that
+            - name: TeslaMate__LookbackDays
+              value: "7"
+            # Pull live $/kWh from Home Assistant's price sensor
+            - name: TeslaMate__EnergyProvider
+              value: HomeAssistant
+            - name: HomeAssistant__BaseUrl
+              value: http://home-home-assistant.home:8080
+            - name: HomeAssistant__EntityId
+              value: sensor.usca_scsc_0600_0000_current_energy_price
+            - name: HomeAssistant__AccessToken
+              valueFrom:
+                secretKeyRef:
+                  name: teslamateagile-ha
+                  key: token
+          resources:
+            requests:
+              cpu: 10m
+              memory: 64Mi
+            limits:
+              memory: 128Mi
