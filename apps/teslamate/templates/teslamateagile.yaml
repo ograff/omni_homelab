@@ -44,7 +44,7 @@ spec:
               value: "300"
             # HA only retains ~10 days of history by default; keep lookback under that
             - name: TeslaMate__LookbackDays
-              value: "7"
+              value: "9"
             # Pull live $/kWh from Home Assistant's price sensor
             - name: TeslaMate__EnergyProvider
               value: HomeAssistant
