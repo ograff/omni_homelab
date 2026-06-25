@@ -4,14 +4,41 @@ drm-exporter:
   nodeSelector:
     kubernetes.io/hostname: nas-worker
 
-  # Intel iGPU host access. /dev/dri for GPU discovery, /sys for freq/mem/hwmon
-  # stats, /dev/cpu for package temperature via MSR.
-  # NOTE: package temperature requires the host `msr` kernel module, which Talos
-  # does not autoload — see the README in this app dir.
+  # Intel iGPU host access. /dev/dri for GPU discovery, /sys for freq/mem/hwmon.
+  # devCpu (MSR-based package temperature) is intentionally omitted: it needs the
+  # host `msr` kernel module, which Talos does not ship and treats as a security
+  # risk. Upstream guidance is to drop /dev/cpu + SYS_RAWIO on such hosts and run
+  # via the perf PMU instead (temperature unavailable). See the README.
   hostAccess:
     devDri: /dev/dri
     sys: /sys
-    devCpu: /dev/cpu
+
+  # Engine-utilization metrics come from the i915 perf PMU via perf_event_open(2).
+  # The default RuntimeDefault seccomp profile blocks that syscall outright (EPERM),
+  # so run Unconfined. (The namespace is PSA `privileged`, see templates/.)
+  podSecurityContext:
+    runAsNonRoot: false
+    runAsUser: 0
+    runAsGroup: 0
+    seccompProfile:
+      type: Unconfined
+
+  # privileged: true is REQUIRED here, verified empirically on this node's i915
+  # iGPU. The i915 perf PMU open needs access to the card0 device node, which is
+  # gated by the container device cgroup — Kubernetes only opens that cgroup with
+  # privileged: true. Non-privileged fails at discovery ("Operation not permitted")
+  # no matter which capabilities are added (PERFMON/SYS_ADMIN/etc. are not enough).
+  # This matches how Plex/frigate access the same iGPU on this node.
+  # With privileged + these caps, CAP_PERFMON bypasses kernel.perf_event_paranoid,
+  # so no node sysctl change is needed (Talos default of 3 is fine).
+  securityContext:
+    privileged: true
+    allowPrivilegeEscalation: true
+    readOnlyRootFilesystem: true
+    capabilities:
+      add:
+        - PERFMON
+        - SYS_ADMIN
 
   monitoring:
     serviceMonitor:
