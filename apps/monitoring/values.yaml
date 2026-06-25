@@ -49,6 +49,13 @@ kube-prometheus-stack:
             - __meta_kubernetes_node_name
           targetLabel: node
     prometheusSpec:
+      additionalScrapeConfigs:
+        - job_name: oliver-win
+          metrics_path: /metrics
+          static_configs:
+            - targets:
+                - oliver-win.corgi-becrux.ts.net:9182
+                - oliver-win.corgi-becrux.ts.net:9835
       ruleSelectorNilUsesHelmValues: false
       serviceMonitorSelectorNilUsesHelmValues: false
       podMonitorSelectorNilUsesHelmValues: false
