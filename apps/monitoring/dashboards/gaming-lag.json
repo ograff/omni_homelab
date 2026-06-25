@@ -3,7 +3,10 @@
     "list": [
       {
         "builtIn": 1,
-        "datasource": { "type": "grafana", "uid": "-- Grafana --" },
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
         "enable": true,
         "hide": true,
         "iconColor": "rgba(0, 211, 255, 1)",
@@ -20,7 +23,12 @@
   "liveNow": false,
   "refresh": "10s",
   "schemaVersion": 39,
-  "tags": ["gaming", "windows", "oliver-win", "lag"],
+  "tags": [
+    "gaming",
+    "windows",
+    "oliver-win",
+    "lag"
+  ],
   "templating": {
     "list": [
       {
@@ -39,7 +47,10 @@
       },
       {
         "current": {},
-        "datasource": { "type": "prometheus", "uid": "$datasource" },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "$datasource"
+        },
         "definition": "label_values(windows_cpu_logical_processor, instance)",
         "hide": 0,
         "includeAll": false,
@@ -59,7 +70,10 @@
       }
     ]
   },
-  "time": { "from": "now-30m", "to": "now" },
+  "time": {
+    "from": "now-30m",
+    "to": "now"
+  },
   "timepicker": {},
   "timezone": "browser",
   "title": "Gaming — Lag & Stutter Diagnosis (oliver-win)",
@@ -67,144 +81,479 @@
   "version": 1,
   "panels": [
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "$datasource"
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 18,
+        "x": 0,
+        "y": 0
+      },
+      "id": 90,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "## How to read this dashboard\n\nGo **top to bottom** — the goal is to find *what is limiting your frames* right now.\n\n1. **Bottleneck verdict** (top-right): tells you if you're **GPU-bound**, **CPU-bound**, or **neither** (lag is elsewhere — network/disk).\n2. **GPU-bound** → look at the **GPU** row. ~100% util is normal & good. If you want more FPS, lower settings. Check *Time spent throttled* — any sustained bars mean the card is being held back (usually power or heat).\n3. **CPU-bound** → look at the **Per-core (unstacked)** panel. One line pinned at ~100% while others are low = a single main thread is the wall. Lowering graphics settings will NOT help; reduce CPU-side load (AI traffic, sim/object density) or you need a faster-per-core CPU.\n4. **Neither maxed but still laggy** → check **Network** (discards/errors = online rubber-banding) and **Disk** (latency/queue spikes = asset-streaming hitches), and **Memory** (pagefile activity = hard stutters).\n\n**Rule of thumb:** *stacked* totals can look scary; what matters is whether any **single** resource (one GPU, one CPU core, one disk) is actually maxed. This dashboard is built so the unstacked panels make that obvious.",
+        "mode": "markdown"
+      },
+      "pluginVersion": "11.0.0",
+      "title": "Start here — interpretation guide",
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "$datasource"
+      },
+      "description": "Automatic call: compares GPU utilization against the busiest single CPU core.\n\n- GPU-BOUND: GPU >= 90% and no single core maxed. Frames limited by the graphics card — lower settings for more FPS.\n- CPU-BOUND: a single core >= 90% while GPU has headroom. One game thread is the wall — graphics settings won't help.\n- BOTH HOT: GPU high AND a core high — balanced/heavy load.\n- NEITHER: nothing maxed. If you still feel lag it's network, disk or paging (see rows below), or a frame-rate cap.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "options": {
+                "0": {
+                  "color": "blue",
+                  "index": 0,
+                  "text": "NEITHER MAXED — check net/disk/paging"
+                }
+              },
+              "type": "value"
+            },
+            {
+              "options": {
+                "1": {
+                  "color": "orange",
+                  "index": 1,
+                  "text": "GPU-BOUND — lower settings for more FPS"
+                }
+              },
+              "type": "value"
+            },
+            {
+              "options": {
+                "2": {
+                  "color": "red",
+                  "index": 2,
+                  "text": "CPU-BOUND — one core is the wall"
+                }
+              },
+              "type": "value"
+            },
+            {
+              "options": {
+                "3": {
+                  "color": "purple",
+                  "index": 3,
+                  "text": "BOTH HOT — heavy balanced load"
+                }
+              },
+              "type": "value"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 6,
+        "x": 18,
+        "y": 0
+      },
+      "id": 91,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value"
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "expr": "(max(nvidia_smi_utilization_gpu_ratio{instance=\"$instance\"}) >= bool 0.90) + 2 * (max(sum by (core) (rate(windows_cpu_time_total{instance=\"$instance\",mode!=\"idle\"}[$__rate_interval]))) >= bool 0.90)",
+          "legendFormat": "bottleneck",
+          "refId": "A"
+        }
+      ],
+      "title": "Bottleneck verdict (live)",
+      "type": "stat"
+    },
+    {
       "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 7
+      },
       "id": 100,
       "panels": [],
       "title": "Verdict — is something throttling or starving right now?",
       "type": "row"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "$datasource" },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "$datasource"
+      },
       "description": "GPU thermal or power throttling is active. ANY of these going to 1 means the GPU is being forced to slow down — the #1 cause of mid-game framerate drops. Sustained > brief blips is what hurts.",
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "thresholds" },
+          "color": {
+            "mode": "thresholds"
+          },
           "mappings": [
-            { "options": { "0": { "color": "green", "index": 0, "text": "OK" }, "1": { "color": "red", "index": 1, "text": "THROTTLING" } }, "type": "value" }
+            {
+              "options": {
+                "0": {
+                  "color": "green",
+                  "index": 0,
+                  "text": "OK"
+                },
+                "1": {
+                  "color": "red",
+                  "index": 1,
+                  "text": "THROTTLING"
+                }
+              },
+              "type": "value"
+            }
           ],
-          "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "red", "value": 1 } ] }
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
+            ]
+          }
         },
         "overrides": []
       },
-      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 1 },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 0,
+        "y": 8
+      },
       "id": 101,
       "options": {
         "colorMode": "background",
         "graphMode": "none",
         "justifyMode": "auto",
         "orientation": "auto",
-        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
         "textMode": "value_and_name"
       },
       "pluginVersion": "11.0.0",
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "$datasource" }, "expr": "max(nvidia_smi_clocks_event_reasons_hw_thermal_slowdown{instance=\"$instance\"})", "legendFormat": "HW thermal", "refId": "A" },
-        { "datasource": { "type": "prometheus", "uid": "$datasource" }, "expr": "max(nvidia_smi_clocks_event_reasons_sw_thermal_slowdown{instance=\"$instance\"})", "legendFormat": "SW thermal", "refId": "B" },
-        { "datasource": { "type": "prometheus", "uid": "$datasource" }, "expr": "max(nvidia_smi_clocks_event_reasons_sw_power_cap{instance=\"$instance\"})", "legendFormat": "SW power cap", "refId": "C" },
-        { "datasource": { "type": "prometheus", "uid": "$datasource" }, "expr": "max(nvidia_smi_clocks_event_reasons_hw_power_brake_slowdown{instance=\"$instance\"})", "legendFormat": "HW power brake", "refId": "D" }
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "expr": "max(nvidia_smi_clocks_event_reasons_hw_thermal_slowdown{instance=\"$instance\"})",
+          "legendFormat": "HW thermal",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "expr": "max(nvidia_smi_clocks_event_reasons_sw_thermal_slowdown{instance=\"$instance\"})",
+          "legendFormat": "SW thermal",
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "expr": "max(nvidia_smi_clocks_event_reasons_sw_power_cap{instance=\"$instance\"})",
+          "legendFormat": "SW power cap",
+          "refId": "C"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "expr": "max(nvidia_smi_clocks_event_reasons_hw_power_brake_slowdown{instance=\"$instance\"})",
+          "legendFormat": "HW power brake",
+          "refId": "D"
+        }
       ],
       "title": "GPU throttling NOW",
       "type": "stat"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "$datasource" },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "$datasource"
+      },
       "description": "Processor queue length: number of threads waiting for a CPU core. Sustained > 0 (rule of thumb > number-of-cores) means the CPU can't keep up and frames are being delayed — CPU-bound stutter.",
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "thresholds" },
-          "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "yellow", "value": 2 }, { "color": "red", "value": 6 } ] },
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 2
+              },
+              {
+                "color": "red",
+                "value": 6
+              }
+            ]
+          },
           "unit": "short"
         },
         "overrides": []
       },
-      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 1 },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 6,
+        "y": 8
+      },
       "id": 102,
       "options": {
         "colorMode": "background",
         "graphMode": "area",
         "justifyMode": "auto",
         "orientation": "auto",
-        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
         "textMode": "value_and_name"
       },
       "pluginVersion": "11.0.0",
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "$datasource" }, "expr": "windows_system_processor_queue_length{instance=\"$instance\"}", "legendFormat": "queue", "refId": "A" }
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "expr": "windows_system_processor_queue_length{instance=\"$instance\"}",
+          "legendFormat": "queue",
+          "refId": "A"
+        }
       ],
       "title": "CPU run-queue (threads waiting)",
       "type": "stat"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "$datasource" },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "$datasource"
+      },
       "description": "Free RAM. When this approaches zero Windows starts paging to disk and you get hard hitches as data is swapped. Watch for it diving during a level load.",
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "thresholds" },
-          "thresholds": { "mode": "absolute", "steps": [ { "color": "red", "value": null }, { "color": "yellow", "value": 1073741824 }, { "color": "green", "value": 3221225472 } ] },
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1073741824
+              },
+              {
+                "color": "green",
+                "value": 3221225472
+              }
+            ]
+          },
           "unit": "bytes"
         },
         "overrides": []
       },
-      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 1 },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 12,
+        "y": 8
+      },
       "id": 103,
       "options": {
         "colorMode": "background",
         "graphMode": "area",
         "justifyMode": "auto",
         "orientation": "auto",
-        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
         "textMode": "value_and_name"
       },
       "pluginVersion": "11.0.0",
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "$datasource" }, "expr": "windows_memory_available_bytes{instance=\"$instance\"}", "legendFormat": "available", "refId": "A" }
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "expr": "windows_memory_available_bytes{instance=\"$instance\"}",
+          "legendFormat": "available",
+          "refId": "A"
+        }
       ],
       "title": "RAM available",
       "type": "stat"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "$datasource" },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "$datasource"
+      },
       "description": "GPU temperature. As it climbs toward the throttle limit (typically ~83-88°C) you'll start seeing the throttling indicators trip.",
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "thresholds" },
-          "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "yellow", "value": 75 }, { "color": "red", "value": 84 } ] },
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 75
+              },
+              {
+                "color": "red",
+                "value": 84
+              }
+            ]
+          },
           "unit": "celsius"
         },
         "overrides": []
       },
-      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 1 },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 18,
+        "y": 8
+      },
       "id": 104,
       "options": {
         "colorMode": "background",
         "graphMode": "area",
         "justifyMode": "auto",
         "orientation": "auto",
-        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
         "textMode": "value_and_name"
       },
       "pluginVersion": "11.0.0",
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "$datasource" }, "expr": "max(nvidia_smi_temperature_gpu{instance=\"$instance\"})", "legendFormat": "GPU temp", "refId": "A" }
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "expr": "max(nvidia_smi_temperature_gpu{instance=\"$instance\"})",
+          "legendFormat": "GPU temp",
+          "refId": "A"
+        }
       ],
       "title": "GPU temperature",
       "type": "stat"
     },
     {
       "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 5 },
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 12
+      },
       "id": 200,
       "panels": [],
       "title": "GPU — saturation, throttling & encode latency",
       "type": "row"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "$datasource" },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "$datasource"
+      },
       "description": "GPU core, memory-controller, encoder and decoder utilization. ~100% GPU util means you're GPU-bound (expected at high settings). If GPU util is LOW while you still have lag, the bottleneck is CPU/network — look at the other rows.",
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "palette-classic" },
+          "color": {
+            "mode": "palette-classic"
+          },
           "custom": {
             "axisCenteredZero": false,
             "axisColorMode": "text",
@@ -216,10 +565,15 @@
             "lineInterpolation": "linear",
             "lineWidth": 2,
             "pointSize": 5,
-            "scaleDistribution": { "type": "linear" },
+            "scaleDistribution": {
+              "type": "linear"
+            },
             "showPoints": "never",
             "spanNulls": false,
-            "stacking": { "group": "A", "mode": "none" }
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            }
           },
           "max": 1,
           "min": 0,
@@ -227,27 +581,80 @@
         },
         "overrides": []
       },
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 6 },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 13
+      },
       "id": 201,
       "options": {
-        "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true },
-        "tooltip": { "mode": "multi", "sort": "desc" }
+        "legend": {
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
       },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "$datasource" }, "expr": "nvidia_smi_utilization_gpu_ratio{instance=\"$instance\"}", "legendFormat": "core", "refId": "A" },
-        { "datasource": { "type": "prometheus", "uid": "$datasource" }, "expr": "nvidia_smi_utilization_memory_ratio{instance=\"$instance\"}", "legendFormat": "memory ctrl", "refId": "B" },
-        { "datasource": { "type": "prometheus", "uid": "$datasource" }, "expr": "nvidia_smi_utilization_encoder_ratio{instance=\"$instance\"}", "legendFormat": "encoder", "refId": "C" },
-        { "datasource": { "type": "prometheus", "uid": "$datasource" }, "expr": "nvidia_smi_utilization_decoder_ratio{instance=\"$instance\"}", "legendFormat": "decoder", "refId": "D" }
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "expr": "nvidia_smi_utilization_gpu_ratio{instance=\"$instance\"}",
+          "legendFormat": "core",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "expr": "nvidia_smi_utilization_memory_ratio{instance=\"$instance\"}",
+          "legendFormat": "memory ctrl",
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "expr": "nvidia_smi_utilization_encoder_ratio{instance=\"$instance\"}",
+          "legendFormat": "encoder",
+          "refId": "C"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "expr": "nvidia_smi_utilization_decoder_ratio{instance=\"$instance\"}",
+          "legendFormat": "decoder",
+          "refId": "D"
+        }
       ],
       "title": "GPU utilization",
       "type": "timeseries"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "$datasource" },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "$datasource"
+      },
       "description": "Time per scrape interval spent throttled, broken down by cause. Any non-zero rate here directly explains frame drops. SW power cap = hitting the power limit; thermal = too hot; HW power brake = transient over-current.",
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "palette-classic" },
+          "color": {
+            "mode": "palette-classic"
+          },
           "custom": {
             "axisCenteredZero": false,
             "axisColorMode": "text",
@@ -258,395 +665,1245 @@
             "lineWidth": 2,
             "showPoints": "never",
             "spanNulls": false,
-            "stacking": { "group": "A", "mode": "normal" }
+            "stacking": {
+              "group": "A",
+              "mode": "normal"
+            }
           },
           "unit": "s"
         },
         "overrides": []
       },
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 6 },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 13
+      },
       "id": 202,
       "options": {
-        "legend": { "calcs": ["sum"], "displayMode": "table", "placement": "bottom", "showLegend": true },
-        "tooltip": { "mode": "multi", "sort": "desc" }
+        "legend": {
+          "calcs": [
+            "sum"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
       },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "$datasource" }, "expr": "rate(nvidia_smi_clocks_event_reasons_counters_sw_power_cap_seconds{instance=\"$instance\"}[$__rate_interval])", "legendFormat": "SW power cap", "refId": "A" },
-        { "datasource": { "type": "prometheus", "uid": "$datasource" }, "expr": "rate(nvidia_smi_clocks_event_reasons_counters_hw_thermal_slowdown_seconds{instance=\"$instance\"}[$__rate_interval])", "legendFormat": "HW thermal", "refId": "B" },
-        { "datasource": { "type": "prometheus", "uid": "$datasource" }, "expr": "rate(nvidia_smi_clocks_event_reasons_counters_sw_thermal_slowdown_seconds{instance=\"$instance\"}[$__rate_interval])", "legendFormat": "SW thermal", "refId": "C" },
-        { "datasource": { "type": "prometheus", "uid": "$datasource" }, "expr": "rate(nvidia_smi_clocks_event_reasons_counters_hw_power_brake_slowdown_seconds{instance=\"$instance\"}[$__rate_interval])", "legendFormat": "HW power brake", "refId": "D" }
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "expr": "rate(nvidia_smi_clocks_event_reasons_counters_sw_power_cap_seconds{instance=\"$instance\"}[$__rate_interval])",
+          "legendFormat": "SW power cap",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "expr": "rate(nvidia_smi_clocks_event_reasons_counters_hw_thermal_slowdown_seconds{instance=\"$instance\"}[$__rate_interval])",
+          "legendFormat": "HW thermal",
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "expr": "rate(nvidia_smi_clocks_event_reasons_counters_sw_thermal_slowdown_seconds{instance=\"$instance\"}[$__rate_interval])",
+          "legendFormat": "SW thermal",
+          "refId": "C"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "expr": "rate(nvidia_smi_clocks_event_reasons_counters_hw_power_brake_slowdown_seconds{instance=\"$instance\"}[$__rate_interval])",
+          "legendFormat": "HW power brake",
+          "refId": "D"
+        }
       ],
       "title": "Time spent throttled (by cause)",
       "type": "timeseries"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "$datasource" },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "$datasource"
+      },
       "description": "GPU core clock vs its max. When throttling kicks in the actual clock drops well below max — visible proof of lost performance.",
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "palette-classic" },
-          "custom": { "axisColorMode": "text", "drawStyle": "line", "fillOpacity": 0, "lineWidth": 2, "showPoints": "never", "spanNulls": false },
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisColorMode": "text",
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "lineWidth": 2,
+            "showPoints": "never",
+            "spanNulls": false
+          },
           "unit": "rothz"
         },
         "overrides": [
-          { "matcher": { "id": "byName", "options": "max" }, "properties": [ { "id": "custom.lineStyle", "value": { "dash": [10, 10], "fill": "dash" } }, { "id": "color", "value": { "fixedColor": "red", "mode": "fixed" } } ] }
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "max"
+            },
+            "properties": [
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "dash": [
+                    10,
+                    10
+                  ],
+                  "fill": "dash"
+                }
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
         ]
       },
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 14 },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 21
+      },
       "id": 203,
       "options": {
-        "legend": { "calcs": ["mean", "min"], "displayMode": "table", "placement": "bottom", "showLegend": true },
-        "tooltip": { "mode": "multi", "sort": "desc" }
+        "legend": {
+          "calcs": [
+            "mean",
+            "min"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
       },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "$datasource" }, "expr": "nvidia_smi_clocks_current_graphics_clock_hz{instance=\"$instance\"}", "legendFormat": "graphics clock", "refId": "A" },
-        { "datasource": { "type": "prometheus", "uid": "$datasource" }, "expr": "nvidia_smi_clocks_max_graphics_clock_hz{instance=\"$instance\"}", "legendFormat": "max", "refId": "B" }
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "expr": "nvidia_smi_clocks_current_graphics_clock_hz{instance=\"$instance\"}",
+          "legendFormat": "graphics clock",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "expr": "nvidia_smi_clocks_max_graphics_clock_hz{instance=\"$instance\"}",
+          "legendFormat": "max",
+          "refId": "B"
+        }
       ],
       "title": "GPU clock vs max",
       "type": "timeseries"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "$datasource" },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "$datasource"
+      },
       "description": "Power draw vs the enforced limit, and NVENC encoder latency. For streamed/remote play (Moonlight, GeForce NOW, OBS) rising encoder latency is felt directly as input lag. Power pinned at the limit explains SW power cap throttling.",
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "palette-classic" },
-          "custom": { "axisColorMode": "text", "drawStyle": "line", "fillOpacity": 0, "lineWidth": 2, "showPoints": "never", "spanNulls": false },
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisColorMode": "text",
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "lineWidth": 2,
+            "showPoints": "never",
+            "spanNulls": false
+          },
           "unit": "watt"
         },
         "overrides": [
-          { "matcher": { "id": "byName", "options": "encoder latency" }, "properties": [ { "id": "unit", "value": "µs" }, { "id": "custom.axisPlacement", "value": "right" }, { "id": "color", "value": { "fixedColor": "purple", "mode": "fixed" } } ] },
-          { "matcher": { "id": "byName", "options": "power limit" }, "properties": [ { "id": "custom.lineStyle", "value": { "dash": [10, 10], "fill": "dash" } }, { "id": "color", "value": { "fixedColor": "red", "mode": "fixed" } } ] }
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "encoder latency"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "µs"
+              },
+              {
+                "id": "custom.axisPlacement",
+                "value": "right"
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "purple",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "power limit"
+            },
+            "properties": [
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "dash": [
+                    10,
+                    10
+                  ],
+                  "fill": "dash"
+                }
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
         ]
       },
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 14 },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 21
+      },
       "id": 204,
       "options": {
-        "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true },
-        "tooltip": { "mode": "multi", "sort": "desc" }
+        "legend": {
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
       },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "$datasource" }, "expr": "nvidia_smi_power_draw_watts{instance=\"$instance\"}", "legendFormat": "power draw", "refId": "A" },
-        { "datasource": { "type": "prometheus", "uid": "$datasource" }, "expr": "nvidia_smi_enforced_power_limit_watts{instance=\"$instance\"}", "legendFormat": "power limit", "refId": "B" },
-        { "datasource": { "type": "prometheus", "uid": "$datasource" }, "expr": "nvidia_smi_encoder_stats_average_latency{instance=\"$instance\"}", "legendFormat": "encoder latency", "refId": "C" }
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "expr": "nvidia_smi_power_draw_watts{instance=\"$instance\"}",
+          "legendFormat": "power draw",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "expr": "nvidia_smi_enforced_power_limit_watts{instance=\"$instance\"}",
+          "legendFormat": "power limit",
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "expr": "nvidia_smi_encoder_stats_average_latency{instance=\"$instance\"}",
+          "legendFormat": "encoder latency",
+          "refId": "C"
+        }
       ],
       "title": "GPU power & encoder latency",
       "type": "timeseries"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "$datasource" },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "$datasource"
+      },
       "description": "VRAM used vs total. Running out of VRAM forces textures to spill into system RAM over PCIe — a major source of texture pop-in and stutter in modern titles.",
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "palette-classic" },
-          "custom": { "axisColorMode": "text", "drawStyle": "line", "fillOpacity": 15, "lineWidth": 2, "showPoints": "never", "spanNulls": false, "stacking": { "group": "A", "mode": "none" } },
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisColorMode": "text",
+            "drawStyle": "line",
+            "fillOpacity": 15,
+            "lineWidth": 2,
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            }
+          },
           "unit": "bytes"
         },
         "overrides": [
-          { "matcher": { "id": "byName", "options": "total" }, "properties": [ { "id": "custom.lineStyle", "value": { "dash": [10, 10], "fill": "dash" } }, { "id": "color", "value": { "fixedColor": "red", "mode": "fixed" } }, { "id": "custom.fillOpacity", "value": 0 } ] }
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "total"
+            },
+            "properties": [
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "dash": [
+                    10,
+                    10
+                  ],
+                  "fill": "dash"
+                }
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              }
+            ]
+          }
         ]
       },
-      "gridPos": { "h": 7, "w": 12, "x": 0, "y": 22 },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 29
+      },
       "id": 205,
       "options": {
-        "legend": { "calcs": ["max"], "displayMode": "table", "placement": "bottom", "showLegend": true },
-        "tooltip": { "mode": "multi", "sort": "desc" }
+        "legend": {
+          "calcs": [
+            "max"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
       },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "$datasource" }, "expr": "nvidia_smi_memory_used_bytes{instance=\"$instance\"}", "legendFormat": "used", "refId": "A" },
-        { "datasource": { "type": "prometheus", "uid": "$datasource" }, "expr": "nvidia_smi_memory_total_bytes{instance=\"$instance\"}", "legendFormat": "total", "refId": "B" }
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "expr": "nvidia_smi_memory_used_bytes{instance=\"$instance\"}",
+          "legendFormat": "used",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "expr": "nvidia_smi_memory_total_bytes{instance=\"$instance\"}",
+          "legendFormat": "total",
+          "refId": "B"
+        }
       ],
       "title": "VRAM usage",
       "type": "timeseries"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "$datasource" },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "$datasource"
+      },
       "description": "PCIe link width and generation actually negotiated. If this drops below the GPU's max (e.g. x16 → x8, or Gen4 → Gen1 at idle is normal, but Gen1/x8 under load is a problem) it throttles the CPU↔GPU bandwidth and causes stutter, especially when VRAM spills.",
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "palette-classic" },
-          "custom": { "axisColorMode": "text", "drawStyle": "line", "fillOpacity": 0, "lineWidth": 2, "showPoints": "auto", "spanNulls": false },
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisColorMode": "text",
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "lineWidth": 2,
+            "showPoints": "auto",
+            "spanNulls": false
+          },
           "unit": "short"
         },
         "overrides": []
       },
-      "gridPos": { "h": 7, "w": 12, "x": 12, "y": 22 },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 12,
+        "y": 29
+      },
       "id": 206,
       "options": {
-        "legend": { "calcs": ["min", "lastNotNull"], "displayMode": "table", "placement": "bottom", "showLegend": true },
-        "tooltip": { "mode": "multi", "sort": "desc" }
+        "legend": {
+          "calcs": [
+            "min",
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
       },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "$datasource" }, "expr": "nvidia_smi_pcie_link_width_current{instance=\"$instance\"}", "legendFormat": "link width (lanes)", "refId": "A" },
-        { "datasource": { "type": "prometheus", "uid": "$datasource" }, "expr": "nvidia_smi_pcie_link_gen_current{instance=\"$instance\"}", "legendFormat": "link gen", "refId": "B" }
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "expr": "nvidia_smi_pcie_link_width_current{instance=\"$instance\"}",
+          "legendFormat": "link width (lanes)",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "expr": "nvidia_smi_pcie_link_gen_current{instance=\"$instance\"}",
+          "legendFormat": "link gen",
+          "refId": "B"
+        }
       ],
       "title": "PCIe link (width & gen)",
       "type": "timeseries"
     },
     {
       "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 29 },
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 36
+      },
       "id": 300,
       "panels": [],
       "title": "CPU — saturation & latency (DPC/interrupts)",
       "type": "row"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "$datasource" },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "$datasource"
+      },
       "description": "Total CPU busy (100% − idle). A single thread maxed out won't show here but the run-queue panel will. Sustained high total + high run-queue = CPU-bound.",
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "thresholds" },
-          "custom": { "axisColorMode": "text", "drawStyle": "line", "fillOpacity": 20, "gradientMode": "scheme", "lineWidth": 1, "showPoints": "never", "spanNulls": false },
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "axisColorMode": "text",
+            "drawStyle": "line",
+            "fillOpacity": 20,
+            "gradientMode": "scheme",
+            "lineWidth": 1,
+            "showPoints": "never",
+            "spanNulls": false
+          },
           "max": 1,
           "min": 0,
-          "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "yellow", "value": 0.8 }, { "color": "red", "value": 0.95 } ] },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 0.8
+              },
+              {
+                "color": "red",
+                "value": 0.95
+              }
+            ]
+          },
           "unit": "percentunit"
         },
         "overrides": []
       },
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 30 },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 37
+      },
       "id": 301,
       "options": {
-        "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true },
-        "tooltip": { "mode": "multi", "sort": "desc" }
+        "legend": {
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
       },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "$datasource" }, "expr": "1 - avg(rate(windows_cpu_time_total{instance=\"$instance\",mode=\"idle\"}[$__rate_interval]))", "legendFormat": "total busy", "refId": "A" }
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "expr": "1 - avg(rate(windows_cpu_time_total{instance=\"$instance\",mode=\"idle\"}[$__rate_interval]))",
+          "legendFormat": "total busy",
+          "refId": "A"
+        }
       ],
       "title": "CPU total utilization",
       "type": "timeseries"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "$datasource" },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "$datasource"
+      },
       "description": "Time spent in DPCs and hardware interrupts. High/spiky DPC or interrupt time is the classic cause of Windows micro-stutter and audio crackle even when overall CPU usage looks fine — usually a driver (network, GPU, USB, audio) misbehaving.",
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "palette-classic" },
-          "custom": { "axisColorMode": "text", "drawStyle": "line", "fillOpacity": 20, "lineWidth": 2, "showPoints": "never", "spanNulls": false, "stacking": { "group": "A", "mode": "normal" } },
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisColorMode": "text",
+            "drawStyle": "line",
+            "fillOpacity": 20,
+            "lineWidth": 2,
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "normal"
+            }
+          },
           "max": 1,
           "min": 0,
           "unit": "percentunit"
         },
         "overrides": []
       },
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 30 },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 37
+      },
       "id": 302,
       "options": {
-        "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true },
-        "tooltip": { "mode": "multi", "sort": "desc" }
+        "legend": {
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
       },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "$datasource" }, "expr": "avg(rate(windows_cpu_time_total{instance=\"$instance\",mode=\"dpc\"}[$__rate_interval]))", "legendFormat": "DPC", "refId": "A" },
-        { "datasource": { "type": "prometheus", "uid": "$datasource" }, "expr": "avg(rate(windows_cpu_time_total{instance=\"$instance\",mode=\"interrupt\"}[$__rate_interval]))", "legendFormat": "interrupt", "refId": "B" }
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "expr": "avg(rate(windows_cpu_time_total{instance=\"$instance\",mode=\"dpc\"}[$__rate_interval]))",
+          "legendFormat": "DPC",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "expr": "avg(rate(windows_cpu_time_total{instance=\"$instance\",mode=\"interrupt\"}[$__rate_interval]))",
+          "legendFormat": "interrupt",
+          "refId": "B"
+        }
       ],
       "title": "DPC & interrupt time (stutter source)",
       "type": "timeseries"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "$datasource" },
-      "description": "Per-core busy time. A single hot core pegged at 100% while others are idle is the signature of a CPU-bound game (most games are limited by one main thread) — raising settings won't help, the CPU is the wall.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "$datasource"
+      },
+      "description": "Each line is ONE core's busy %, drawn 0-100% and NOT stacked. Look for a single line pinned near 100% while the others sit lower — that is a CPU main-thread bottleneck (common in flight/strategy sims). If every line is moderate (none maxed) the CPU is NOT your wall, even if 'total busy' looks high. Hover to see which core number is the hot one.",
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "continuous-GrYlRd" },
-          "custom": { "fillOpacity": 70, "hideFrom": { "legend": false, "tooltip": false, "viz": false }, "scaleDistribution": { "type": "linear" } },
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisColorMode": "text",
+            "drawStyle": "line",
+            "fillOpacity": 8,
+            "gradientMode": "none",
+            "lineWidth": 2,
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "line"
+            }
+          },
           "max": 1,
           "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "transparent",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 0.95
+              }
+            ]
+          },
           "unit": "percentunit"
         },
         "overrides": []
       },
-      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 38 },
+      "gridPos": {
+        "h": 9,
+        "w": 24,
+        "x": 0,
+        "y": 45
+      },
       "id": 303,
       "options": {
-        "calculate": false,
-        "cellGap": 1,
-        "color": { "exponent": 0.5, "fill": "dark-orange", "mode": "scheme", "scale": "exponential", "scheme": "RdYlGn", "reverse": true, "steps": 64 },
-        "exemplars": { "color": "rgba(255,0,255,0.7)" },
-        "filterValues": { "le": 1e-9 },
-        "legend": { "show": true },
-        "rowsFrame": { "layout": "auto" },
-        "tooltip": { "mode": "single", "show": true, "yHistogram": false },
-        "yAxis": { "axisPlacement": "left", "reverse": false, "unit": "short" }
+        "legend": {
+          "calcs": [
+            "max"
+          ],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "sortBy": "Max",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
       },
       "pluginVersion": "11.0.0",
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "$datasource" }, "expr": "sum by (core) (rate(windows_cpu_time_total{instance=\"$instance\",mode!=\"idle\"}[$__rate_interval]))", "format": "time_series", "legendFormat": "{{core}}", "refId": "A" }
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "expr": "sum by (core) (rate(windows_cpu_time_total{instance=\"$instance\",mode!=\"idle\"}[$__rate_interval]))",
+          "format": "time_series",
+          "legendFormat": "core {{core}}",
+          "refId": "A"
+        }
       ],
-      "title": "Per-core utilization (find the pegged main thread)",
+      "title": "Per-core utilization — UNSTACKED (find the pegged main thread)",
       "type": "timeseries"
     },
     {
       "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 46 },
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 53
+      },
       "id": 400,
       "panels": [],
       "title": "Memory — paging & pressure",
       "type": "row"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "$datasource" },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "$datasource"
+      },
       "description": "Available physical RAM and committed (promised) bytes vs the commit limit. When committed approaches the limit, or available nears zero, Windows pages to disk → hard hitches.",
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "palette-classic" },
-          "custom": { "axisColorMode": "text", "drawStyle": "line", "fillOpacity": 10, "lineWidth": 2, "showPoints": "never", "spanNulls": false },
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisColorMode": "text",
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "lineWidth": 2,
+            "showPoints": "never",
+            "spanNulls": false
+          },
           "unit": "bytes"
         },
         "overrides": [
-          { "matcher": { "id": "byName", "options": "commit limit" }, "properties": [ { "id": "custom.lineStyle", "value": { "dash": [10, 10], "fill": "dash" } }, { "id": "color", "value": { "fixedColor": "red", "mode": "fixed" } } ] }
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "commit limit"
+            },
+            "properties": [
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "dash": [
+                    10,
+                    10
+                  ],
+                  "fill": "dash"
+                }
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
         ]
       },
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 47 },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 54
+      },
       "id": 401,
       "options": {
-        "legend": { "calcs": ["min", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true },
-        "tooltip": { "mode": "multi", "sort": "desc" }
+        "legend": {
+          "calcs": [
+            "min",
+            "max"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
       },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "$datasource" }, "expr": "windows_memory_available_bytes{instance=\"$instance\"}", "legendFormat": "available", "refId": "A" },
-        { "datasource": { "type": "prometheus", "uid": "$datasource" }, "expr": "windows_memory_committed_bytes{instance=\"$instance\"}", "legendFormat": "committed", "refId": "B" },
-        { "datasource": { "type": "prometheus", "uid": "$datasource" }, "expr": "windows_memory_commit_limit{instance=\"$instance\"}", "legendFormat": "commit limit", "refId": "C" }
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "expr": "windows_memory_available_bytes{instance=\"$instance\"}",
+          "legendFormat": "available",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "expr": "windows_memory_committed_bytes{instance=\"$instance\"}",
+          "legendFormat": "committed",
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "expr": "windows_memory_commit_limit{instance=\"$instance\"}",
+          "legendFormat": "commit limit",
+          "refId": "C"
+        }
       ],
       "title": "Memory available & committed",
       "type": "timeseries"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "$datasource" },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "$datasource"
+      },
       "description": "Pages read/written to the pagefile per second. This is the smoking gun for paging-induced stutter: any sustained activity here means the game is being swapped to disk mid-session.",
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "palette-classic" },
-          "custom": { "axisColorMode": "text", "drawStyle": "line", "fillOpacity": 25, "lineWidth": 2, "showPoints": "never", "spanNulls": false, "stacking": { "group": "A", "mode": "normal" } },
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisColorMode": "text",
+            "drawStyle": "line",
+            "fillOpacity": 25,
+            "lineWidth": 2,
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "normal"
+            }
+          },
           "unit": "ops"
         },
         "overrides": []
       },
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 47 },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 54
+      },
       "id": 402,
       "options": {
-        "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true },
-        "tooltip": { "mode": "multi", "sort": "desc" }
+        "legend": {
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
       },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "$datasource" }, "expr": "rate(windows_memory_swap_pages_read_total{instance=\"$instance\"}[$__rate_interval])", "legendFormat": "pages read", "refId": "A" },
-        { "datasource": { "type": "prometheus", "uid": "$datasource" }, "expr": "rate(windows_memory_swap_pages_written_total{instance=\"$instance\"}[$__rate_interval])", "legendFormat": "pages written", "refId": "B" }
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "expr": "rate(windows_memory_swap_pages_read_total{instance=\"$instance\"}[$__rate_interval])",
+          "legendFormat": "pages read",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "expr": "rate(windows_memory_swap_pages_written_total{instance=\"$instance\"}[$__rate_interval])",
+          "legendFormat": "pages written",
+          "refId": "B"
+        }
       ],
       "title": "Pagefile activity (hard paging)",
       "type": "timeseries"
     },
     {
       "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 55 },
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 62
+      },
       "id": 500,
       "panels": [],
       "title": "Network — online game responsiveness",
       "type": "row"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "$datasource" },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "$datasource"
+      },
       "description": "Throughput on each NIC. A saturated uplink (e.g. a large download running) shares the pipe with your game traffic and inflates ping/jitter. Watch the active wired adapter.",
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "palette-classic" },
-          "custom": { "axisColorMode": "text", "drawStyle": "line", "fillOpacity": 10, "lineWidth": 2, "showPoints": "never", "spanNulls": false },
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisColorMode": "text",
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "lineWidth": 2,
+            "showPoints": "never",
+            "spanNulls": false
+          },
           "unit": "Bps"
         },
         "overrides": []
       },
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 56 },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 63
+      },
       "id": 501,
       "options": {
-        "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true },
-        "tooltip": { "mode": "multi", "sort": "desc" }
+        "legend": {
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
       },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "$datasource" }, "expr": "rate(windows_net_bytes_received_total{instance=\"$instance\"}[$__rate_interval])", "legendFormat": "{{nic}} ⬇ rx", "refId": "A" },
-        { "datasource": { "type": "prometheus", "uid": "$datasource" }, "expr": "rate(windows_net_bytes_sent_total{instance=\"$instance\"}[$__rate_interval])", "legendFormat": "{{nic}} ⬆ tx", "refId": "B" }
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "expr": "rate(windows_net_bytes_received_total{instance=\"$instance\"}[$__rate_interval])",
+          "legendFormat": "{{nic}} ⬇ rx",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "expr": "rate(windows_net_bytes_sent_total{instance=\"$instance\"}[$__rate_interval])",
+          "legendFormat": "{{nic}} ⬆ tx",
+          "refId": "B"
+        }
       ],
       "title": "Network throughput",
       "type": "timeseries"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "$datasource" },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "$datasource"
+      },
       "description": "Discarded/errored packets and output queue length. ANY sustained discards or errors, or a non-zero output queue, means packet loss / congestion at the NIC — felt as rubber-banding and hit-registration problems in online games.",
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "palette-classic" },
-          "custom": { "axisColorMode": "text", "drawStyle": "line", "fillOpacity": 20, "lineWidth": 2, "showPoints": "auto", "spanNulls": false, "stacking": { "group": "A", "mode": "normal" } },
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisColorMode": "text",
+            "drawStyle": "line",
+            "fillOpacity": 20,
+            "lineWidth": 2,
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "normal"
+            }
+          },
           "unit": "pps"
         },
         "overrides": [
-          { "matcher": { "id": "byName", "options": "output queue" }, "properties": [ { "id": "unit", "value": "short" }, { "id": "custom.axisPlacement", "value": "right" }, { "id": "custom.stacking", "value": { "group": "B", "mode": "none" } } ] }
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "output queue"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "short"
+              },
+              {
+                "id": "custom.axisPlacement",
+                "value": "right"
+              },
+              {
+                "id": "custom.stacking",
+                "value": {
+                  "group": "B",
+                  "mode": "none"
+                }
+              }
+            ]
+          }
         ]
       },
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 56 },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 63
+      },
       "id": 502,
       "options": {
-        "legend": { "calcs": ["sum", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true },
-        "tooltip": { "mode": "multi", "sort": "desc" }
+        "legend": {
+          "calcs": [
+            "sum",
+            "max"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
       },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "$datasource" }, "expr": "rate(windows_net_packets_received_discarded_total{instance=\"$instance\"}[$__rate_interval])", "legendFormat": "{{nic}} rx discarded", "refId": "A" },
-        { "datasource": { "type": "prometheus", "uid": "$datasource" }, "expr": "rate(windows_net_packets_outbound_discarded_total{instance=\"$instance\"}[$__rate_interval])", "legendFormat": "{{nic}} tx discarded", "refId": "B" },
-        { "datasource": { "type": "prometheus", "uid": "$datasource" }, "expr": "rate(windows_net_packets_received_errors_total{instance=\"$instance\"}[$__rate_interval])", "legendFormat": "{{nic}} rx errors", "refId": "C" },
-        { "datasource": { "type": "prometheus", "uid": "$datasource" }, "expr": "rate(windows_net_packets_outbound_errors_total{instance=\"$instance\"}[$__rate_interval])", "legendFormat": "{{nic}} tx errors", "refId": "D" },
-        { "datasource": { "type": "prometheus", "uid": "$datasource" }, "expr": "windows_net_output_queue_length_packets{instance=\"$instance\"}", "legendFormat": "{{nic}} output queue", "refId": "E" }
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "expr": "rate(windows_net_packets_received_discarded_total{instance=\"$instance\"}[$__rate_interval])",
+          "legendFormat": "{{nic}} rx discarded",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "expr": "rate(windows_net_packets_outbound_discarded_total{instance=\"$instance\"}[$__rate_interval])",
+          "legendFormat": "{{nic}} tx discarded",
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "expr": "rate(windows_net_packets_received_errors_total{instance=\"$instance\"}[$__rate_interval])",
+          "legendFormat": "{{nic}} rx errors",
+          "refId": "C"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "expr": "rate(windows_net_packets_outbound_errors_total{instance=\"$instance\"}[$__rate_interval])",
+          "legendFormat": "{{nic}} tx errors",
+          "refId": "D"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "expr": "windows_net_output_queue_length_packets{instance=\"$instance\"}",
+          "legendFormat": "{{nic}} output queue",
+          "refId": "E"
+        }
       ],
       "title": "Packet loss / errors / queue",
       "type": "timeseries"
     },
     {
       "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 64 },
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 71
+      },
       "id": 600,
       "panels": [],
       "title": "Disk — asset streaming & shader stalls",
       "type": "row"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "$datasource" },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "$datasource"
+      },
       "description": "Average latency per I/O on each volume (latency-seconds ÷ ops). Spikes here cause traversal stutter and texture/shader pop-in as the game streams assets from disk. The drive holding your games is the one to watch.",
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "palette-classic" },
-          "custom": { "axisColorMode": "text", "drawStyle": "line", "fillOpacity": 0, "lineWidth": 2, "showPoints": "never", "spanNulls": false },
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisColorMode": "text",
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "lineWidth": 2,
+            "showPoints": "never",
+            "spanNulls": false
+          },
           "unit": "s"
         },
         "overrides": []
       },
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 65 },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 72
+      },
       "id": 601,
       "options": {
-        "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true },
-        "tooltip": { "mode": "multi", "sort": "desc" }
+        "legend": {
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
       },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "$datasource" }, "expr": "rate(windows_logical_disk_read_latency_seconds_total{instance=\"$instance\"}[$__rate_interval]) / clamp_min(rate(windows_logical_disk_reads_total{instance=\"$instance\"}[$__rate_interval]), 1)", "legendFormat": "{{volume}} read", "refId": "A" },
-        { "datasource": { "type": "prometheus", "uid": "$datasource" }, "expr": "rate(windows_logical_disk_write_latency_seconds_total{instance=\"$instance\"}[$__rate_interval]) / clamp_min(rate(windows_logical_disk_writes_total{instance=\"$instance\"}[$__rate_interval]), 1)", "legendFormat": "{{volume}} write", "refId": "B" }
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "expr": "rate(windows_logical_disk_read_latency_seconds_total{instance=\"$instance\"}[$__rate_interval]) / clamp_min(rate(windows_logical_disk_reads_total{instance=\"$instance\"}[$__rate_interval]), 1)",
+          "legendFormat": "{{volume}} read",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "expr": "rate(windows_logical_disk_write_latency_seconds_total{instance=\"$instance\"}[$__rate_interval]) / clamp_min(rate(windows_logical_disk_writes_total{instance=\"$instance\"}[$__rate_interval]), 1)",
+          "legendFormat": "{{volume}} write",
+          "refId": "B"
+        }
       ],
       "title": "Disk latency per I/O",
       "type": "timeseries"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "$datasource" },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "$datasource"
+      },
       "description": "Outstanding I/O requests queued per volume. A persistently deep queue means the disk can't keep up with asset streaming — sustained loading hitches.",
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "palette-classic" },
-          "custom": { "axisColorMode": "text", "drawStyle": "line", "fillOpacity": 10, "lineWidth": 2, "showPoints": "never", "spanNulls": false },
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisColorMode": "text",
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "lineWidth": 2,
+            "showPoints": "never",
+            "spanNulls": false
+          },
           "unit": "short"
         },
         "overrides": []
       },
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 65 },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 72
+      },
       "id": 602,
       "options": {
-        "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true },
-        "tooltip": { "mode": "multi", "sort": "desc" }
+        "legend": {
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
       },
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "$datasource" }, "expr": "windows_logical_disk_requests_queued{instance=\"$instance\"}", "legendFormat": "{{volume}}", "refId": "A" }
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "expr": "windows_logical_disk_requests_queued{instance=\"$instance\"}",
+          "legendFormat": "{{volume}}",
+          "refId": "A"
+        }
       ],
       "title": "Disk queue depth",
       "type": "timeseries"
