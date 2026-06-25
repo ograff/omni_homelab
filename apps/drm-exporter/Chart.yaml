@@ -1,0 +1,7 @@
+apiVersion: v2
+name: drm-exporter
+version: 0.0.0
+dependencies:
+  - name: drm-exporter
+    repository: oci://ghcr.io/home-operations/charts
+    version: 0.2.4

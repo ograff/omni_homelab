@@ -1,0 +1,22 @@
+drm-exporter:
+  # Per-node DaemonSet exporter for Intel iGPU metrics. Pinned to nas-worker,
+  # the node with the Intel iGPU (same node Plex uses for HW transcoding).
+  nodeSelector:
+    kubernetes.io/hostname: nas-worker
+
+  # Intel iGPU host access. /dev/dri for GPU discovery, /sys for freq/mem/hwmon
+  # stats, /dev/cpu for package temperature via MSR.
+  # NOTE: package temperature requires the host `msr` kernel module, which Talos
+  # does not autoload — see the README in this app dir.
+  hostAccess:
+    devDri: /dev/dri
+    sys: /sys
+    devCpu: /dev/cpu
+
+  monitoring:
+    serviceMonitor:
+      enabled: true
+      interval: 30s
+    # Picked up by the Grafana dashboard sidecar (searchNamespace: ALL).
+    dashboards:
+      enabled: true
