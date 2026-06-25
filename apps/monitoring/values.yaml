@@ -53,9 +53,13 @@ kube-prometheus-stack:
         - job_name: oliver-win
           metrics_path: /metrics
           static_configs:
+            # oliver-win on the tailnet. CoreDNS has no ts.net stub zone, so the
+            # MagicDNS name does not resolve in-cluster; use the stable tailnet IP.
             - targets:
-                - oliver-win.corgi-becrux.ts.net.:9182
-                - oliver-win.corgi-becrux.ts.net.:9835
+                - 100.106.71.5:9182
+                - 100.106.71.5:9835
+              labels:
+                instance: oliver-win
       ruleSelectorNilUsesHelmValues: false
       serviceMonitorSelectorNilUsesHelmValues: false
       podMonitorSelectorNilUsesHelmValues: false
