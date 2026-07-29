@@ -196,7 +196,7 @@ qbit:
     # -- image pull policy
     pullPolicy: IfNotPresent
     # -- image tag
-    tag: 5.2.3
+    tag: 20.04.1
   sidecars:
     qbittorrent-exporter:
       image: martabal/qbittorrent-exporter:latest
