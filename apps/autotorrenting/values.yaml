@@ -1,7 +1,7 @@
 sonarr:
   image:
     repository: lscr.io/linuxserver/sonarr
-    tag: version-4.0.16.2944
+    tag: version-4.0.19.2979
   persistence:
     config:
       enabled: true
@@ -40,7 +40,7 @@ sonarr:
 radarr:
   image:
     repository: lscr.io/linuxserver/radarr
-    tag: version-6.0.4.10291
+    tag: version-6.3.0.10514
   persistence:
     config:
       enabled: true
@@ -75,7 +75,7 @@ radarr:
 jackett:
   image:
     repository: lscr.io/linuxserver/jackett
-    tag: 0.24.1564
+    tag: 0.24.2288
   persistence:
     config:
       enabled: true
