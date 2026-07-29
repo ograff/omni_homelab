@@ -55,7 +55,6 @@ paperless-ngx:
         cert-manager.io/cluster-issuer: letsencrypt-prod
         external-dns.alpha.kubernetes.io/target: "tunnel.2411.house"
         external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
-      tls: true
       hosts:
         - host: &host paperless.2411.house
           paths:
