@@ -122,7 +122,7 @@ spec:
     spec:
       containers:
         - name: piaware
-          image: ghcr.io/sdr-enthusiasts/docker-piaware:latest-build-640
+          image: ghcr.io/sdr-enthusiasts/docker-piaware:latest-build-640@sha256:c367ae029059499c2a41902b17e82f48cfae4b07ca637c979b5a9bc9c8f69eca
           env:
             - name: BEASTHOST
               value: ultrafeeder
@@ -167,7 +167,7 @@ spec:
             value: "1"
       containers:
         - name: fr24
-          image: ghcr.io/sdr-enthusiasts/docker-flightradar24:latest-build-825
+          image: ghcr.io/sdr-enthusiasts/docker-flightradar24:latest-build-825@sha256:12f77e02e9458bdd9c3ab26fc66be08a5d437395611c8bcc97d88342d7beef2f
           env:
             - name: BEASTHOST
               value: ultrafeeder
