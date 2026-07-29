@@ -156,7 +156,7 @@ bazarr:
 audiobookshelf:
   image:
     repository: advplyr/audiobookshelf
-    tag: 2.32.1
+    tag: 2.36.0
   persistence:
     config:
       enabled: true
