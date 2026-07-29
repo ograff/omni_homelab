@@ -44,9 +44,6 @@ radarr:
   image:
     repository: lscr.io/linuxserver/radarr
     tag: version-6.0.4.10291
-  ingress:
-    main:
-      enabled: true
   persistence:
     config:
       enabled: true
