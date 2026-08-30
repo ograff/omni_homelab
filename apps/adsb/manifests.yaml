@@ -27,7 +27,7 @@ spec:
               mountPath: /var/globe_history
             - name: collectd
               mountPath: /var/lib/collectd
-          image: ghcr.io/sdr-enthusiasts/docker-adsb-ultrafeeder:telegraf-build-872
+          image: ghcr.io/sdr-enthusiasts/docker-adsb-ultrafeeder:telegraf-build-957
           env:
             - name: UUID
               value: cbd01ab0-b9a1-4ecb-961d-b17912063f41
