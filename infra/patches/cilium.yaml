@@ -1828,7 +1828,7 @@ cluster:
             spec:
               containers:
               - name: cilium-operator
-                image: "quay.io/cilium/operator-generic:v1.17.4@sha256:a3906412f477b09904f46aac1bed28eb522bef7899ed7dd81c15f78b7aa1b9b5"
+                image: "quay.io/cilium/operator-generic:v1.20.5@sha256:c6e7de6665aa9701db86c4fe46828a75a0d167afe084a9ffb5bce34b2c4fa8c4"
                 imagePullPolicy: IfNotPresent
                 command:
                 - cilium-operator-generic
