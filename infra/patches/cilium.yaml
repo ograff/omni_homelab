@@ -2091,7 +2091,7 @@ cluster:
                   mountPath: /tmp
                 terminationMessagePolicy: FallbackToLogsOnError
               - name: backend
-                image: "quay.io/cilium/hubble-ui-backend:v0.13.2@sha256:a034b7e98e6ea796ed26df8f4e71f83fc16465a19d166eff67a03b822c0bfa15"
+                image: "quay.io/cilium/hubble-ui-backend:v0.13.7@sha256:e47a10fb74ee01ac6230895dafb2f180558fbfc4ff3cc0409e767ee995525b0f"
                 imagePullPolicy: IfNotPresent
                 env:
                 - name: EVENTS_SERVER_PORT
